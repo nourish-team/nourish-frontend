@@ -13,6 +13,7 @@ import JournalHistoryScreen from "../screens/JournalHistoryScreen";
 import CreateNewRoutineScreen from "../screens/CreateNewRoutineScreen";
 import SearchToAddNewScreen from "../screens/SearchToAddNewScreen";
 import UsersLikesScreen from "../screens/UsersLikesScreen";
+import UserAccountScreen from "../screens/UserAccountScreen";
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 const Stack = createStackNavigator<RootStackParamList>();
@@ -25,9 +26,10 @@ const Apptabs: React.FC = () => (
       tabBarStyle: { backgroundColor: "rgba(1,90,131,255)" },
     }}
   >
-    <Tab.Screen name="Home" component={HomeScreen}></Tab.Screen>
-    <Tab.Screen name="UserPage" component={UserPageScreen}></Tab.Screen>
-    <Tab.Screen name="Likes" component={UsersLikesScreen}></Tab.Screen>
+    <Tab.Screen name="Home" component={HomeScreen} />
+    <Tab.Screen name="UserPage" component={UserPageScreen} />
+    <Tab.Screen name="Likes" component={UsersLikesScreen} />
+    <Tab.Screen name="Account" component={UserAccountScreen} />
   </Tab.Navigator>
 );
 
