@@ -26,6 +26,7 @@ type Props = {
 const UserRoutinePageScreen: React.FC<Props> = ({ route, navigation }) => {
   const { routineId, routineName, routineProduct } = route.params;
   const [products, setProducts] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const handleBackPress = () => {
     navigation.navigate("HomeScreen");
@@ -47,38 +48,31 @@ const UserRoutinePageScreen: React.FC<Props> = ({ route, navigation }) => {
     });
   };
 
-  const fetchProductName = async (id) => {
+  const fetchAndDisplayProducts = useCallback(async () => {
+    setLoading(true);
+    setProducts([]);
+
     try {
-      const response = await fetch(`http://10.0.2.2:8080/product/id/${id}`);
-      const data = await response.json();
-      console.log("DATA ", data);
-      const newProduct = data.product_name;
-      setProducts((prevProducts) => [...prevProducts, newProduct]);
+      const fetchPromises = routineProduct.map(async (pid) => {
+        const response = await fetch(`http://10.0.2.2:8080/product/id/${pid}`);
+        const data = await response.json();
+        const newProduct = data.product_name;
+        return newProduct;
+      });
+
+      const newProducts = await Promise.all(fetchPromises);
+      console.log("newproducts ", newProducts);
+      setProducts(newProducts);
     } catch (error) {
       console.error(error);
-    }
-  };
-
-  const handleDisplayProducts = () => {
-    console.log("routineProduct ", routineProduct);
-    for (const pid of routineProduct) {
-      // console.log("pid ", pid);
-      fetchProductName(pid);
-    }
-  };
-
-  useEffect(() => {
-    if (routineProduct) {
-      handleDisplayProducts();
+    } finally {
+      setLoading(false);
     }
   }, [routineProduct]);
 
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     setProducts([]);
-  //     handleDisplayProducts();
-  //   }, [])
-  // );
+  useEffect(() => {
+    fetchAndDisplayProducts();
+  }, [routineProduct]);
 
   return (
     <View style={styles.container}>
