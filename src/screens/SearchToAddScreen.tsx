@@ -63,7 +63,7 @@ const SearchToAddScreen: React.FC<Props> = ({ route, navigation }) => {
     }
   };
 
-  const handleItemSelect = async (itemId) => {
+  const handleItemSelect = async (itemId: number) => {
     const newRoutineProducts = routineProduct.concat(itemId);
     const routineData = {
       routine_id: routineId,
@@ -86,7 +86,7 @@ const SearchToAddScreen: React.FC<Props> = ({ route, navigation }) => {
         navigation.navigate("UserRoutinePageScreen", {
           routineId,
           routineName,
-          routineProduct,
+          routineProduct: newRoutineProducts,
         });
       } else {
         console.log("response not ok");
