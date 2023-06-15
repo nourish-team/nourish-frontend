@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
   },
   createButtonContainer: {
     position: "absolute",
-    bottom: 20,
+    bottom: 130,
     right: 20,
   },
   card: {

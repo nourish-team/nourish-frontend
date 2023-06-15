@@ -6,6 +6,8 @@ import {
   StyleSheet,
   Button,
   TouchableOpacity,
+  ImageBackground,
+  ScrollView,
 } from "react-native";
 
 import { useNavigation } from "@react-navigation/native";
@@ -61,6 +63,14 @@ interface Location {
 
 const HomeScreen: React.FC = () => {
   const { userId, userName } = useContext(UserContext);
+  const skincareTypes = [
+    "acne",
+    "dry",
+    "oily",
+    "sensitive",
+    "normal",
+    "combination",
+  ];
   const [location, setLocation] = useState<string | null>(null);
   const [weatherData, setWeatherData] = useState<ApiResponse | null>(null);
 
@@ -141,77 +151,120 @@ const HomeScreen: React.FC = () => {
   const handleSkincareTypePress = (skincareType: string) => {
     navigation.navigate("SkincareType", { skincareType });
   };
+
   console.log(weatherData);
+
+  const hour =
+    parseInt(
+      weatherData?.location?.localtime?.split(" ")[1]?.split(":")[0] ?? "",
+      10
+    ) ?? 0;
+  const isDay = hour >= 6 && hour < 18;
+  const backgroundImage = isDay
+    ? require("../../assets/images/dayBackground.jpg")
+    : require("../../assets/images/nightBackground.jpg");
+
   return (
     <View style={styles.container}>
-      <View style={styles.titleContainer}>
-        <Text style={styles.titleText}>nourish.</Text>
+      <View style={styles.headerContainer}>
         <Image
-          style={styles.tinyLogo}
-          source={require("../../assets/images/nourish_logo.png")}
+          source={require("../../assets/images/home_header.png")}
+          style={styles.backgroundImage}
         />
-      </View>
-      <View style={styles.line} />
-      <Text style={styles.infoText}>
-        Hello {userName}... Lorem ipsum, dolor sit amet consectetur adipisicing
-        elit. Ipsa modi placeat dolor, obcaecati quod impedit incidunt nesciunt
-        deleniti sequi odit aperiam aliquam repellat aliquid numquam
-        reprehenderit, quas quae enim repudiandae.
-      </Text>
-      <View style={styles.line} />
-      <View>
-        {/* <Text style={styles.infoText}>Your Location: {location}</Text> */}
-        <Text>{weatherData?.current?.condition?.text}</Text>
-        <Text>Humidity: {weatherData?.current?.humidity}%</Text>
-        <Text>Temperature: {weatherData?.current?.temp_c}°C</Text>
-        <Text>City: {weatherData?.location?.name}</Text>
-        <Text>UV index: {weatherData?.current?.uv}</Text>
-        {weatherData?.current?.uv && weatherData.current.uv >= 5 && (
-          <Text>Don't forget to add sunscreen to your beauty routine!</Text>
-        )}
-      </View>
-      <Text style={styles.infoText}>browse by skin type</Text>
-      <View style={styles.buttonContainer}>
-        <View style={styles.buttonRow}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => handleSkincareTypePress("Acne")}
-          >
-            <Text style={styles.buttonText}>Acne</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.button, styles.buttonMargin]}
-            onPress={() => handleSkincareTypePress("Dry")}
-          >
-            <Text style={styles.buttonText}>Dry</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.buttonRow}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => handleSkincareTypePress("Oily")}
-          >
-            <Text style={styles.buttonText}>Oily</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.button, styles.buttonMargin]}
-            onPress={() => handleSkincareTypePress("Sensitive")}
-          >
-            <Text style={styles.buttonText}>Sensitive</Text>
-          </TouchableOpacity>
+        <View style={styles.titleContainer}>
+          <Text style={styles.titleText}>nourish.</Text>
         </View>
       </View>
+      <ScrollView style={styles.scrollContainer}>
+        <View style={styles.greetContainer}>
+          <Text style={styles.greetTitle}>Hello {userName}...</Text>
+          <Text style={styles.greetText}>
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Ipsa modi
+            placeat dolor, obcaecati quod impedit incidunt nesciunt deleniti
+            sequi odit aperiam aliquam repellat aliquid numquam reprehenderit,
+            quas quae enim repudiandae.
+          </Text>
+        </View>
+        <View style={styles.weatherCardContainer}>
+          <ImageBackground
+            source={backgroundImage}
+            style={{ width: "100%", borderRadius: 10 }}
+            resizeMode="cover"
+          >
+            <Text style={styles.weatherText}>
+              {weatherData?.current?.condition?.text}
+            </Text>
+            <Text style={styles.weatherInfoText}>
+              Humidity: {weatherData?.current?.humidity}%
+            </Text>
+            <Text style={styles.weatherInfoText}>
+              Temperature: {weatherData?.current?.temp_c}°C
+            </Text>
+            <Text style={styles.weatherInfoText}>
+              City: {weatherData?.location?.name}
+            </Text>
+            <Text style={[styles.weatherInfoText, styles.weatherInfoTextLast]}>
+              UV index: {weatherData?.current?.uv}
+            </Text>
+            {weatherData?.current?.uv && weatherData.current.uv >= 5 && (
+              <Text style={styles.reminderText}>
+                Don't forget to wear sunscreen!
+              </Text>
+            )}
+          </ImageBackground>
+        </View>
+        <Text style={styles.infoText}>browse by</Text>
+        <Text style={styles.infoText}>skin type</Text>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.cardContainer}
+        >
+          {skincareTypes.map((type, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[styles.card, index !== 0 && styles.cardMargin]}
+              onPress={() => handleSkincareTypePress(type)}
+            >
+              <Text style={styles.cardText}>{type}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+        <View style={styles.footerContainer}>
+          <Image
+            source={require("../../assets/images/footer-shape.jpg")}
+            style={styles.footerImage}
+          />
+        </View>
+      </ScrollView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    backgroundColor: "white",
+  },
+  headerContainer: {
     paddingTop: 70,
     flex: 1,
     backgroundColor: "white",
     paddingLeft: 20,
+    paddingRight: 10,
+    marginBottom: -400,
+  },
+  footerContainer: {
+    flex: 1,
+    zIndex: -1,
+    marginLeft: -10,
+  },
+  scrollContainer: {
+    flex: 1,
+    backgroundColor: "white",
+    paddingLeft: 20,
     paddingRight: 20,
+    marginBottom: 90,
   },
   titleContainer: {
     flexDirection: "row",
@@ -227,8 +280,8 @@ const styles = StyleSheet.create({
     textAlign: "left",
     fontSize: 40,
     fontFamily: "PlayfairDisplay-Bold",
-    color: "rgba(1,90,131,255)",
-    marginBottom: 20,
+    color: "#967E76",
+    marginBottom: 10,
     marginTop: -20,
   },
   line: {
@@ -237,38 +290,139 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(1,90,131,255)",
     marginTop: -10,
   },
+  squigglyLine: {
+    width: "100%",
+    height: 2,
+    borderBottomColor: "black",
+    borderBottomWidth: 1,
+    borderStyle: "dotted",
+  },
   infoText: {
-    textAlign: "center",
-    fontSize: 18,
-    fontFamily: "Lato-Bold",
-    color: "rgba(1,90,131,255)",
-    lineHeight: 25,
-    marginBottom: 30,
-    marginTop: 30,
+    textAlign: "right",
+    fontSize: 30,
+    fontFamily: "PlayfairDisplay-Bold",
+    color: "#1B2021",
+    lineHeight: 30,
   },
-  buttonContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  buttonRow: {
+  cardContainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 20,
+    marginTop: 30,
+    paddingHorizontal: 10,
+    paddingBottom: 80,
   },
-  button: {
-    width: 100,
-    height: 100,
-    backgroundColor: "rgba(1,90,131,255)",
+  card: {
+    width: 120,
+    height: 180,
+    borderRadius: 10,
+    backgroundColor: "white",
     justifyContent: "center",
     alignItems: "center",
+    elevation: 3,
   },
-  buttonText: {
-    color: "white",
+  cardMargin: {
+    marginLeft: 10,
+  },
+  cardText: {
+    color: "black",
     fontSize: 16,
     fontFamily: "Lato-Bold",
   },
-  buttonMargin: {
-    marginLeft: 25,
+  greetContainer: {
+    backgroundColor: "#EEE3CB",
+    borderRadius: 10,
+    padding: 25,
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  greetTitle: {
+    fontFamily: "PlayfairDisplay-BoldItalic",
+    fontSize: 20,
+    marginBottom: 10,
+  },
+  greetText: {
+    fontFamily: "Lato-Regular",
+    fontSize: 15,
+    letterSpacing: 1,
+  },
+  backgroundImage: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    width: "80%",
+    height: "50%",
+    opacity: 0.5,
+    resizeMode: "cover",
+    zIndex: -1,
+  },
+  footerImage: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    width: "100%",
+    height: 100,
+    resizeMode: "cover",
+    zIndex: -1,
+  },
+  weatherCardContainer: {
+    borderRadius: 10,
+    borderColor: "#B7C4CF",
+    borderWidth: 5,
+    marginTop: 10,
+    marginBottom: 120,
+    resizeMode: "cover",
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden",
+  },
+  weatherText: {
+    fontSize: 20,
+    fontFamily: "Lato-Bold",
+    fontWeight: "bold",
+    marginBottom: 10,
+    color: "#FFFFFF",
+    paddingLeft: 15,
+    paddingRight: 15,
+    paddingTop: 15,
+    textShadowColor: "#3D5A80",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 5,
+  },
+  weatherInfoText: {
+    fontSize: 16,
+    fontFamily: "Lato-Bold",
+    marginBottom: 5,
+    color: "#FFFFFF",
+    paddingLeft: 15,
+    paddingRight: 15,
+    textShadowColor: "#3D5A80",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 5,
+  },
+  weatherInfoTextLast: {
+    fontSize: 16,
+    marginBottom: 10,
+    textShadowColor: "#3D5A80",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 5,
+  },
+  reminderText: {
+    fontSize: 16,
+    fontFamily: "PlayfairDisplay-Bold",
+    fontWeight: "bold",
+    color: "#153B50",
+    padding: 10,
+    textShadowColor: "#ffffff",
+    textShadowRadius: 15,
+    borderColor: "white",
+    borderWidth: 1,
+    backgroundColor: "white",
+    borderRadius: 10,
+    textAlign: "center",
+    margin: 20,
   },
 });
 
