@@ -7,6 +7,7 @@ import {
   TextInput,
   Switch,
 } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 import { RootStackParamList } from "../navigation/types";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RouteProp } from "@react-navigation/native";
@@ -36,16 +37,38 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
     (number | { itemId: number; itemName: string })[]
   >([]);
   const [routineName, setRoutineName] = useState("");
-  const skinTypeOptions = ["Oily", "Sensitive", "Dry", "Acne"];
+  const skinTypeOptions = [
+    "oily",
+    "sensitive",
+    "dry",
+    "acne",
+    "normal",
+    "combination",
+  ];
   const [selectedSkinType, setSelectedSkinType] = useState<string>("");
   const [isPublic, setIsPublic] = useState(false);
   const [error, setError] = useState(false);
+  const [createButtonDisabled, setCreateButtonDisabled] = useState(true);
 
   useEffect(() => {
     if (selectedItems && selectedItems.length > 0) {
       setSavedItems((prevSavedItems) => [...prevSavedItems, ...selectedItems]);
     }
   }, [selectedItems]);
+
+  useEffect(() => {
+    if (
+      userId &&
+      savedItems.length > 0 &&
+      routineName &&
+      selectedSkinType !== "" &&
+      selectedSkinType
+    ) {
+      setCreateButtonDisabled(false);
+    } else {
+      setCreateButtonDisabled(true);
+    }
+  }, [routineName, selectedSkinType, savedItems]);
 
   const handleCancelButtonPress = () => {
     navigation.navigate("HomeScreen");
@@ -60,6 +83,10 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
   };
 
   const handleCreateRoutine = async () => {
+    if (createButtonDisabled) {
+      alert("Some fields are missing! :(");
+      return;
+    }
     const routineProducts = savedItems.map((item) => {
       if (typeof item === "number") {
         return item;
@@ -113,18 +140,16 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
         value={routineName}
         onChangeText={(input) => setRoutineName(input)}
       />
-      <Text>Select your skin type:</Text>
-      {skinTypeOptions.map((option) => (
-        <TouchableOpacity
-          key={option}
-          onPress={() => handleSkinTypeSelect(option)}
-          style={
-            selectedSkinType === option ? styles.selectedOption : styles.option
-          }
-        >
-          <Text>{option}</Text>
-        </TouchableOpacity>
-      ))}
+      <Picker
+        selectedValue={selectedSkinType}
+        onValueChange={handleSkinTypeSelect}
+        style={styles.picker}
+      >
+        <Picker.Item label="Select skin type" value={""} />
+        {skinTypeOptions.map((option, index) => (
+          <Picker.Item key={index} label={option} value={option} />
+        ))}
+      </Picker>
       <TouchableOpacity
         style={styles.createButton}
         onPress={handleAddProductsPress}
@@ -234,6 +259,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginTop: 10,
+  },
+  picker: {
+    width: 300,
+    height: 50,
+    borderWidth: 3,
+    borderColor: "rgba(1, 90, 131, 255)",
+    marginBottom: 10,
+    color: "rgba(1, 90, 131, 255)",
+    fontFamily: "PlayfairDisplay-Bold",
   },
 });
 
