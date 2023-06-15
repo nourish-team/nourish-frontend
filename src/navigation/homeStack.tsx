@@ -14,6 +14,7 @@ import CreateNewRoutineScreen from "../screens/CreateNewRoutineScreen";
 import SearchToAddNewScreen from "../screens/SearchToAddNewScreen";
 import UsersLikesScreen from "../screens/UsersLikesScreen";
 import UserAccountScreen from "../screens/UserAccountScreen";
+import TabIcon from "../components/TabIcon";
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 const Stack = createStackNavigator<RootStackParamList>();
@@ -21,15 +22,78 @@ const Stack = createStackNavigator<RootStackParamList>();
 const Apptabs: React.FC = () => (
   <Tab.Navigator
     screenOptions={{
+      tabBarShowLabel: false,
       tabBarActiveTintColor: "white",
       headerShown: false,
-      tabBarStyle: { backgroundColor: "rgba(1,90,131,255)" },
+      tabBarStyle: {
+        backgroundColor: "#B7C4CF",
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        elevation: 0,
+        borderTopLeftRadius: 15,
+        borderTopRightRadius: 15,
+        height: 100,
+      },
     }}
   >
-    <Tab.Screen name="Home" component={HomeScreen} />
-    <Tab.Screen name="UserPage" component={UserPageScreen} />
-    <Tab.Screen name="Likes" component={UsersLikesScreen} />
-    <Tab.Screen name="Account" component={UserAccountScreen} />
+    <Tab.Screen
+      name="Home"
+      component={HomeScreen}
+      options={{
+        tabBarIcon: ({ focused }) => (
+          <TabIcon
+            focused={focused}
+            IconComponent="Entypo"
+            icon="home"
+            size={30}
+          />
+        ),
+      }}
+    />
+    <Tab.Screen
+      name="UserPage"
+      component={UserPageScreen}
+      options={{
+        tabBarIcon: ({ focused }) => (
+          <TabIcon
+            focused={focused}
+            IconComponent="FontAwesome5"
+            icon="user-alt"
+            size={30}
+          />
+        ),
+      }}
+    />
+    <Tab.Screen
+      name="Likes"
+      component={UsersLikesScreen}
+      options={{
+        tabBarIcon: ({ focused }) => (
+          <TabIcon
+            focused={focused}
+            IconComponent="FontAwesome"
+            icon="heart"
+            size={30}
+          />
+        ),
+      }}
+    />
+    <Tab.Screen
+      name="Account"
+      component={UserAccountScreen}
+      options={{
+        tabBarIcon: ({ focused }) => (
+          <TabIcon
+            focused={focused}
+            IconComponent="Ionicons"
+            icon="settings"
+            size={30}
+          />
+        ),
+      }}
+    />
   </Tab.Navigator>
 );
 
