@@ -9,6 +9,7 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
   const { skincareType } = route.params;
   const [routinesByType, setRoutinesByType] = useState([]);
   const [fetchRoutinesError, setFetchRoutinesError] = useState(false);
+  const [like, setLike] = useState(false);
   const {userId} = useContext(UserContext);
   
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
@@ -21,6 +22,10 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
     fetchRoutinesByType();
   }, []);
 
+  useEffect(() => {
+    console.log(like)
+  }, [like])
+
   const fetchRoutinesByType = async () => {
     try {
       const response = await fetch(`http://10.0.2.2:8080/routine/skintype/${skincareType.toLowerCase()}`); // put in route later
@@ -32,13 +37,13 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
   };
 
   const handelPostLike = async (routineId:number) => {
-    console.log(routineId, "was clicked clicked");
+    console.log("user id", userId, "routine", routineId, "was clicked clicked");
     const postReq = {
       users_id: userId,
       routines_id: routineId,
       like: true
     }
-
+    
     try {
       const response = await fetch(`http://10.0.2.2:8080/like/routine`, {
         method: 'POST',
@@ -46,13 +51,18 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(postReq),
-      }); // put in route later
+      }); 
       const data = await response.json();
-      console.log("data of like", data);
+        setLike(data.routines_id);
     } catch (error) {
       
     }
   }
+
+  // const handleDisplayLikes = (routine: []) => {
+  //   console.log()
+  //   return <>5</>
+  // }
 
   return (
     <View style={styles.container}>
@@ -66,9 +76,17 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
           style={styles.likeButton}
           onPress={() => handelPostLike(routine.id)}
           >
-          <Icon name="heart" size={20} color="#FFD1DC" />
+          {like == routine.id ? (
+            <Icon name="heart" size={20} color="#FFD1DC" />
+          )
+          : (
+            <Icon name="heart-o" size={20} />
+          )
+        }
+          
           <Text>Like</Text>
           </TouchableOpacity>
+          <Text>{routine["_count"].likes}</Text>
         </View>
       ))}
       <Button title="Back" onPress={handleBackPress} />
