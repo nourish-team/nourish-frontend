@@ -43,7 +43,11 @@ export default function App() {
   const fetchFonts = () => {
     return Font.loadAsync({
       "PlayfairDisplay-Bold": require("./assets/fonts/PlayfairDisplay-Bold.ttf"),
+      "PlayfairDisplay-BoldItalic": require("./assets/fonts/PlayfairDisplay-BoldItalic.ttf"),
+      "PlayfairDisplay-Medium": require("./assets/fonts/PlayfairDisplay-Medium.ttf"),
+      "PlayfairDisplay-Regular": require("./assets/fonts/PlayfairDisplay-Regular.ttf"),
       "Lato-Bold": require("./assets/fonts/Lato-Bold.ttf"),
+      "Lato-Regular": require("./assets/fonts/Lato-Regular.ttf"),
     });
   };
 
