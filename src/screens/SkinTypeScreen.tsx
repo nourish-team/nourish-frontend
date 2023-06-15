@@ -7,7 +7,7 @@ import UserContext from "../contexts/UserContext";
 
 const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
   const { skincareType } = route.params;
-  const [routinesByType, setRoutinesByType] = useState([]);
+  const [routinesByType, setRoutinesByType] = useState<any[]>([]);
   const [fetchRoutinesError, setFetchRoutinesError] = useState(false);
   const [like, setLike] = useState(false);
   const {userId} = useContext(UserContext);
@@ -28,11 +28,20 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
 
   const fetchRoutinesByType = async () => {
     try {
-      const response = await fetch(`http://10.0.2.2:8080/routine/skintype/${skincareType.toLowerCase()}`); // put in route later
+      const response = await fetch(`http://10.0.2.2:8080/routine/skintype/${skincareType.toLowerCase()}`);
       const data = await response.json();
-      setRoutinesByType(data);
+
+      const likedResponse = await fetch(`http://10.0.2.2:8080/like/user/${userId}`);
+      const likedData = await likedResponse.json();
+      const likedRoutineIds = likedData.map((like: any) => like.routine_id.id);
+
+      const routinesWithLikes = data.map((routine: any) => ({
+        ...routine,
+        liked: likedRoutineIds.includes(routine.id),
+      }))
+      setRoutinesByType(routinesWithLikes);
     } catch (error) {
-      setFetchRoutinesError(false);
+      setFetchRoutinesError(true);
     }
   };
 
@@ -53,9 +62,21 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
         body: JSON.stringify(postReq),
       }); 
       const data = await response.json();
-        setLike(data.routines_id);
+
+      setRoutinesByType(prevRoutines =>
+        prevRoutines.map(routine => {
+          if (routine.id === routineId) {
+            return {
+              ...routine,
+              liked: true,
+            };
+          }
+          return routine;
+        })
+      );
+        // setLike(data.routines_id);
     } catch (error) {
-      
+      console.error(error);
     }
   }
 
@@ -66,6 +87,7 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
 
   return (
     <View style={styles.container}>
+      {fetchRoutinesError ? <Text>"Oops, something went wrong"</Text>: null}
       <Text>You selected {skincareType} skin type</Text>
       {routinesByType.map((routine: any) => (
         <View key={routine.id} style={styles.routineContainer}>
@@ -76,7 +98,7 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
           style={styles.likeButton}
           onPress={() => handelPostLike(routine.id)}
           >
-          {like == routine.id ? (
+          {routine.liked ? (
             <Icon name="heart" size={20} color="#FFD1DC" />
           )
           : (
