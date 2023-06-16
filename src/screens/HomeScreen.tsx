@@ -168,12 +168,13 @@ const HomeScreen: React.FC = () => {
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <Image
-          source={require("../../assets/images/home_header.png")}
+          source={require("../../assets/images/nourish-logo-sparkles.png")}
           style={styles.backgroundImage}
         />
         <View style={styles.titleContainer}>
           <Text style={styles.titleText}>nourish.</Text>
         </View>
+        <View style={styles.leftLine} />
       </View>
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.greetContainer}>
@@ -213,6 +214,10 @@ const HomeScreen: React.FC = () => {
             )}
           </ImageBackground>
         </View>
+        {/* <Image
+          source={require("../../assets/images/squiggly-line.png")}
+          style={styles.squigglyLine}
+        /> */}
         <Text style={styles.infoText}>browse by</Text>
         <Text style={styles.infoText}>skin type</Text>
         <ScrollView
@@ -232,7 +237,7 @@ const HomeScreen: React.FC = () => {
         </ScrollView>
         <View style={styles.footerContainer}>
           <Image
-            source={require("../../assets/images/footer-shape.jpg")}
+            source={require("../../assets/images/footer-shape-dark.png")}
             style={styles.footerImage}
           />
         </View>
@@ -252,7 +257,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     paddingLeft: 20,
     paddingRight: 10,
-    marginBottom: -400,
+    marginBottom: -440,
   },
   footerContainer: {
     flex: 1,
@@ -270,6 +275,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     marginBottom: 10,
+    marginTop: 10,
   },
   tinyLogo: {
     width: 40,
@@ -280,22 +286,23 @@ const styles = StyleSheet.create({
     textAlign: "left",
     fontSize: 40,
     fontFamily: "PlayfairDisplay-Bold",
-    color: "#967E76",
+    // color: "#967E76",
+    color: "rgba(1,90,131,255)",
     marginBottom: 10,
     marginTop: -20,
   },
-  line: {
-    width: "100%",
+  leftLine: {
+    width: "65%",
     height: 2,
     backgroundColor: "rgba(1,90,131,255)",
     marginTop: -10,
   },
   squigglyLine: {
     width: "100%",
-    height: 2,
-    borderBottomColor: "black",
-    borderBottomWidth: 1,
-    borderStyle: "dotted",
+    height: "undefined",
+    aspectRatio: 1,
+    maxWidth: "10%",
+    maxHeight: "10%",
   },
   infoText: {
     textAlign: "right",
@@ -350,13 +357,14 @@ const styles = StyleSheet.create({
   },
   backgroundImage: {
     position: "absolute",
-    top: 0,
-    right: 0,
-    width: "80%",
-    height: "50%",
-    opacity: 0.5,
+    top: 20,
+    right: 10,
+    width: "35%",
+    height: "25%",
+    // opacity: 0.5,
     resizeMode: "cover",
     zIndex: -1,
+    marginTop: 10,
   },
   footerImage: {
     position: "absolute",

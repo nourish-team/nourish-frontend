@@ -58,7 +58,7 @@ export default function App() {
 
   return (
     <>
-      <StatusBar style="dark" />
+      <StatusBar style="light" backgroundColor="#B7C4CF" />
       <UserContext.Provider
         value={{ userId, setUserId, userName, setUserName }}
       >
