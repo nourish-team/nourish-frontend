@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
-import { View, Text, StyleSheet, Button, Pressable, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Button,
+  Pressable,
+  TouchableOpacity,
+} from "react-native";
 import { ParamListBase, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -9,9 +16,8 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
   const { skincareType } = route.params;
   const [routinesByType, setRoutinesByType] = useState<any[]>([]);
   const [fetchRoutinesError, setFetchRoutinesError] = useState(false);
-  const [like, setLike] = useState(false);
-  const {userId} = useContext(UserContext);
-  
+  const { userId } = useContext(UserContext);
+
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
 
   const handleBackPress = () => {
@@ -22,49 +28,70 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
     fetchRoutinesByType();
   }, []);
 
-  useEffect(() => {
-    console.log(like)
-  }, [like])
-
   const fetchRoutinesByType = async () => {
     try {
-      const response = await fetch(`http://10.0.2.2:8080/routine/skintype/${skincareType.toLowerCase()}`);
+      const response = await fetch(
+        `http://10.0.2.2:8080/routine/skintype/${skincareType.toLowerCase()}`
+      );
       const data = await response.json();
 
-      const likedResponse = await fetch(`http://10.0.2.2:8080/like/user/${userId}`);
+      const likedResponse = await fetch(
+        `http://10.0.2.2:8080/like/user/${userId}`
+      );
       const likedData = await likedResponse.json();
       const likedRoutineIds = likedData.map((like: any) => like.routine_id.id);
 
-      const routinesWithLikes = data.map((routine: any) => ({
-        ...routine,
-        liked: likedRoutineIds.includes(routine.id),
-      }))
+      const routinesWithLikes = [];
+
+      for (const routine of data) {
+        const productPromises = routine.routine_product.map((productId: any) =>
+          fetch(`http://10.0.2.2:8080/product/id/${productId}`)
+        );
+
+        const productResponses = await Promise.all(productPromises);
+        const productDataList = await Promise.all(
+          productResponses.map((response) => response.json())
+        );
+
+        const products = productDataList.map((productData) => ({
+          brand: productData.brand,
+          productName: productData.product_name,
+        }));
+
+        const routineWithLike = {
+          ...routine,
+          liked: likedRoutineIds.includes(routine.id),
+          products,
+        };
+
+        routinesWithLikes.push(routineWithLike);
+      }
+
       setRoutinesByType(routinesWithLikes);
     } catch (error) {
       setFetchRoutinesError(true);
     }
   };
 
-  const handelPostLike = async (routineId:number) => {
+  const handelPostLike = async (routineId: number) => {
     console.log("user id", userId, "routine", routineId, "was clicked clicked");
     const postReq = {
       users_id: userId,
       routines_id: routineId,
-      like: true
-    }
-    
+      like: true,
+    };
+
     try {
       const response = await fetch(`http://10.0.2.2:8080/like/routine`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(postReq),
-      }); 
-      const data = await response.json();
+      });
 
-      setRoutinesByType(prevRoutines =>
-        prevRoutines.map(routine => {
+      setRoutinesByType((prevRoutines) =>
+        prevRoutines.map((routine) => {
           if (routine.id === routineId) {
             return {
               ...routine,
@@ -74,39 +101,38 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
           return routine;
         })
       );
-        // setLike(data.routines_id);
     } catch (error) {
       console.error(error);
     }
-  }
-
-  // const handleDisplayLikes = (routine: []) => {
-  //   console.log()
-  //   return <>5</>
-  // }
+  };
 
   return (
     <View style={styles.container}>
-      {fetchRoutinesError ? <Text>"Oops, something went wrong"</Text>: null}
+      {fetchRoutinesError ? <Text>Oops, something went wrong</Text> : null}
       <Text>You selected {skincareType} skin type</Text>
       {routinesByType.map((routine: any) => (
         <View key={routine.id} style={styles.routineContainer}>
           <Text style={styles.routineName}>{routine.routine_name}</Text>
-          <Text style={styles.routineProduct}>{routine.routine_product}</Text>
+          <View>
+            {routine.products.map((product: any, index: number) => (
+              <Text key={index} style={styles.routineProduct}>
+                {product.brand}
+                {product.productName}
+              </Text>
+            ))}
+          </View>
           <Text style={styles.createdAt}>{routine.created_at}</Text>
           <TouchableOpacity
-          style={styles.likeButton}
-          onPress={() => handelPostLike(routine.id)}
+            style={styles.likeButton}
+            onPress={() => handelPostLike(routine.id)}
           >
-          {routine.liked ? (
-            <Icon name="heart" size={20} color="#FFD1DC" />
-          )
-          : (
-            <Icon name="heart-o" size={20} />
-          )
-        }
-          
-          <Text>Like</Text>
+            {routine.liked ? (
+              <Icon name="heart" size={20} color="#FFD1DC" />
+            ) : (
+              <Icon name="heart-o" size={20} />
+            )}
+
+            <Text>Like</Text>
           </TouchableOpacity>
           <Text>{routine["_count"].likes}</Text>
         </View>
@@ -115,6 +141,7 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     paddingTop: 70,
@@ -148,7 +175,6 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
 });
-  
 
 //   return (
 //     <View style={styles.container}>
@@ -161,11 +187,11 @@ const styles = StyleSheet.create({
 //           <Pressable style={styles.button} onPress={() => handelPostLike(routine.id)}>
 //             <Text>Like</Text>
 //           </Pressable>
-          
+
 //         </View>
 //       ))}
-//       <Button title="Back" onPress={handleBackPress} />  
-//     </View>  
+//       <Button title="Back" onPress={handleBackPress} />
+//     </View>
 //   );
 // };
 
