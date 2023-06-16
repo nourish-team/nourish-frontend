@@ -38,6 +38,9 @@ const SearchToAddScreen: React.FC<Props> = ({ route, navigation }) => {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [fetchItemsError, setFetchItemsError] = useState(false);
   const [updateError, setUpdateError] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const PAGE_SIZE = 5;
 
   useEffect(() => {}, [routineId]);
 
@@ -53,14 +56,20 @@ const SearchToAddScreen: React.FC<Props> = ({ route, navigation }) => {
         const data = await response.json();
         setSearchResults(data);
         setFetchItemsError(false);
+        setCurrentPage(1);
+        setTotalPages(Math.ceil(data.length / PAGE_SIZE));
       } else {
         setSearchResults([]);
         setFetchItemsError(true);
+        setCurrentPage(1);
+        setTotalPages(1);
       }
     } catch (error) {
       setSearchResults([]);
       setFetchItemsError(true);
-    }
+      setCurrentPage(1);
+      setTotalPages(1);
+    } 
   };
 
   const handleItemSelect = async (itemId: number) => {
@@ -98,6 +107,18 @@ const SearchToAddScreen: React.FC<Props> = ({ route, navigation }) => {
     }
   };
 
+  const handlePreviousPage = () => {
+    setCurrentPage(currentPage - 1);
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage(currentPage + 1);
+  };
+
+  const endIndex = currentPage * PAGE_SIZE;
+  const startIndex = endIndex - PAGE_SIZE;
+  const paginatedData = searchResults.slice(startIndex, endIndex);
+
   return (
     <View style={styles.container}>
       <View style={styles.searchContainer}>
@@ -114,10 +135,11 @@ const SearchToAddScreen: React.FC<Props> = ({ route, navigation }) => {
           <Text style={styles.buttonText}>Search {routineId}</Text>
         </TouchableOpacity>
       </View>
+      {searchResults.length > 0 && (
       <View style={styles.resultContainer}>
         {fetchItemsError ? <Text>Oops! Brand not found</Text> : null}
         <FlatList
-          data={searchResults}
+          data={paginatedData}
           renderItem={({ item }) => (
             <TouchableOpacity
               onPress={() => handleItemSelect(item.id)}
@@ -126,8 +148,32 @@ const SearchToAddScreen: React.FC<Props> = ({ route, navigation }) => {
               <Text>{item.product_name}</Text>
             </TouchableOpacity>
           )}
-        />
+          keyExtractor={(item) => item.id.toString()}
+          />
+          <View style={styles.paginationContainer}>
+            <TouchableOpacity
+                onPress={handlePreviousPage}
+                disabled={currentPage === 1}
+                style={[
+                  styles.paginationButton,
+                  currentPage === 1 && styles.disabledButton,
+                ]}
+              >
+                <Text style={styles.paginationButtonText}>Previous</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleNextPage}
+                disabled={currentPage === totalPages}
+                style={[
+                  styles.paginationButton,
+                  currentPage === totalPages && styles.disabledButton,
+                ]}
+              >
+                <Text style={styles.paginationButtonText}>Next</Text>
+              </TouchableOpacity>
+            </View>
       </View>
+      )}
     </View>
   );
 };
@@ -186,6 +232,24 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 1,
     borderColor: "rgba(1, 90, 131, 255)",
+  },
+  paginationContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  paginationButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    marginHorizontal: 5,
+    backgroundColor: "rgba(1, 90, 131, 255)",
+  },
+  disabledButton: {
+    opacity: 0.5,
+  },
+  paginationButtonText: {
+    color: "white",
   },
 });
 
