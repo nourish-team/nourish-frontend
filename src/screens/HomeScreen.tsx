@@ -335,7 +335,7 @@ const styles = StyleSheet.create({
     fontFamily: "Lato-Bold",
   },
   greetContainer: {
-    backgroundColor: "#EEE3CB",
+    backgroundColor: "#D7C0AE",
     borderRadius: 10,
     padding: 25,
     marginBottom: 20,
