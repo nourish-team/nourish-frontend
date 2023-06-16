@@ -20,6 +20,7 @@ type UserPageScreenNavigationProp = StackNavigationProp<
 
 const UserPageScreen: React.FC = () => {
   const [userRoutines, setUserRoutines] = useState<any[]>([]);
+  const [userProducts, setUserProducts] = useState<any[]>([]);
   const [fetchRoutinesError, setFetchRoutinesError] = useState(false);
   const { userId } = useContext(UserContext);
   const navigation = useNavigation<UserPageScreenNavigationProp>();
@@ -36,11 +37,15 @@ const UserPageScreen: React.FC = () => {
 
   const fetchRoutines = async () => {
     try {
+      const userIdToString = String(userId);
       const response = await fetch(
-        `http://10.0.2.2:8080/routine/user/${userId}`
+        `http://10.0.2.2:8080/routine/user/${userIdToString}`
       );
       const data = await response.json();
-      setUserRoutines(data);
+      console.log("LONG DATA ", data.productsOfRoutines);
+      setUserRoutines(data.routinesByUser);
+      setUserProducts(data.productsOfRoutines);
+      console.log("USER ROUTINE STATE ", userRoutines);
     } catch (error) {
       setFetchRoutinesError(false);
     }
@@ -76,21 +81,23 @@ const UserPageScreen: React.FC = () => {
       {fetchRoutinesError ? (
         <Text>There was an error fetching routines</Text>
       ) : null}
-      {userRoutines.map((routine) => (
-        <TouchableOpacity
-          style={styles.card}
-          key={routine.id}
-          onPress={() =>
-            handleRoutinePress(
-              routine.id,
-              routine.routine_name,
-              routine.routine_product
-            )
-          }
-        >
-          <Text>{routine.routine_name}</Text>
-        </TouchableOpacity>
-      ))}
+      {userRoutines.map((routine) => {
+        return (
+          <TouchableOpacity
+            style={styles.card}
+            key={routine.id}
+            onPress={() =>
+              handleRoutinePress(
+                routine.id,
+                routine.routine_name,
+                routine.routine_product
+              )
+            }
+          >
+            <Text>{routine.routine_name}</Text>
+          </TouchableOpacity>
+        );
+      })}
       <View style={styles.createButtonContainer}>
         <TouchableOpacity onPress={handleCreateNewRoutinePress}>
           <AntDesign name="pluscircle" size={50} color="rgba(1,90,131,255)" />
