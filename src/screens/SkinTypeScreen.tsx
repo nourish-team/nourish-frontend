@@ -79,8 +79,6 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
   };
 
   const handlePostLike = async (routineId: number) => {
-    console.log("User ID:", userId, "Routine ID:", routineId, "was clicked");
-
     const postReq = {
       users_id: userId,
       routines_id: routineId,
@@ -95,6 +93,8 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
         },
         body: JSON.stringify(postReq),
       });
+
+      const data = await response.json();
 
       if (response.ok) {
         setRoutinesByType((prevRoutines) =>
@@ -119,7 +119,7 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
         console.error("Failed to post like:", response.status);
       }
     } catch (error) {
-      console.error("Failed to post like:", error);
+      alert("You've already liked this");
     }
   };
 
