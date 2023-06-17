@@ -4,8 +4,10 @@ import {
   Text,
   StyleSheet,
   Button,
-  Pressable,
   TouchableOpacity,
+  Image,
+  Dimensions,
+  ScrollView,
 } from "react-native";
 import { ParamListBase, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -123,70 +125,164 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.imageContainer}>
+        <Image
+          source={require("../../assets/images/blue-curtain.png")}
+          style={styles.image}
+          resizeMode="stretch"
+        />
+      </View>
+      <View style={styles.titleContainer}>
+        <Text style={styles.titleText}>{skincareType} routines</Text>
+      </View>
+      <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
+        <Text style={styles.backText}>Back</Text>
+      </TouchableOpacity>
       {fetchRoutinesError && <Text>Oops, something went wrong</Text>}
-      <Text>You selected {skincareType} skin type</Text>
-      {routinesByType.map((routine: any) => (
-        <View key={routine.id} style={styles.routineContainer}>
-          <Text style={styles.routineName}>{routine.routine_name}</Text>
-          <View>
-            {routine.products.map((product: any, index: number) => (
-              <Text key={index} style={styles.routineProduct}>
-                {product.brand}
-                {product.productName}
-              </Text>
-            ))}
+      <ScrollView>
+        {routinesByType.map((routine: any) => (
+          <View key={routine.id} style={styles.routineContainer}>
+            <View style={styles.routineContainerTop}>
+              <Text style={styles.routineName}>{routine.routine_name}</Text>
+              <Text style={styles.createdAt}>{routine.created_at}</Text>
+            </View>
+
+            <View style={styles.routineContainerBottom}>
+              {routine.products.map((product: any, index: number) => (
+                <View key={index} style={styles.routineProduct}>
+                  <Text style={styles.brandName}>{product.brand}</Text>
+                  <Text style={styles.productName}>{product.productName}</Text>
+                </View>
+              ))}
+              <TouchableOpacity
+                style={styles.likeButton}
+                onPress={() => handlePostLike(routine.id)}
+              >
+                {routine.liked ? (
+                  <Icon name="heart" size={20} color="#FFD1DC" />
+                ) : (
+                  <Icon name="heart-o" size={20} />
+                )}
+                <Text style={styles.likesText}>
+                  {" "}
+                  {routine._count.likes}
+                  {routine._count.likes > 1 ? (
+                    <Text> Likes</Text>
+                  ) : routine._count.likes === 0 ? (
+                    <Text> Likes</Text>
+                  ) : (
+                    <Text> Like </Text>
+                  )}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-          <Text style={styles.createdAt}>{routine.created_at}</Text>
-          <TouchableOpacity
-            style={styles.likeButton}
-            onPress={() => handlePostLike(routine.id)}
-          >
-            {routine.liked ? (
-              <Icon name="heart" size={20} color="#FFD1DC" />
-            ) : (
-              <Icon name="heart-o" size={20} />
-            )}
-            <Text>Like</Text>
-          </TouchableOpacity>
-          <Text>{routine._count.likes}</Text>
-        </View>
-      ))}
-      <Button title="Back" onPress={handleBackPress} />
+        ))}
+      </ScrollView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 70,
     flex: 1,
-    backgroundColor: "#FFFDD0",
-    paddingLeft: 20,
-    paddingRight: 20,
+    backgroundColor: "white",
   },
   routineContainer: {
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    borderRadius: 5,
-    backgroundColor: "#FAFAFA",
+    marginHorizontal: 40,
+    marginBottom: 40,
   },
   routineName: {
-    marginTop: 10,
-    marginBottom: 10,
+    margin: 10,
+    fontFamily: "Lato-Bold",
+    fontSize: 18,
   },
   routineProduct: {
-    marginBottom: 10,
+    backgroundColor: "#EEE3CB",
+    borderRadius: 10,
+    width: "100%",
+    padding: 10,
+    marginBottom: 5,
   },
   createdAt: {
-    marginBottom: 10,
+    margin: 10,
+    fontFamily: "Lato-Regular",
   },
   likeButton: {
     marginTop: 10,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-end",
+  },
+  imageContainer: {
+    position: "absolute",
+    top: 0,
+    height: Dimensions.get("window").height * 0.15,
+    width: Dimensions.get("window").width,
+  },
+  image: {
+    height: "100%",
+    width: "100%",
+  },
+  titleContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 10,
+    marginBottom: 25,
+  },
+  titleText: {
+    fontSize: 20,
+    fontFamily: "Lato-Bold",
+    color: "white",
+    letterSpacing: 1.5,
+    marginBottom: 30,
+    marginTop: Dimensions.get("window").height * 0.06,
+    textAlign: "center",
+  },
+  backButton: {
+    backgroundColor: "#EEE3CB",
+    borderRadius: 30,
+    width: 80,
+    alignSelf: "center",
+    padding: 10,
+    marginBottom: 30,
+  },
+  backText: {
+    textAlign: "center",
+    fontFamily: "Lato-Bold",
+    fontSize: 15,
+  },
+  routineContainerTop: {
+    height: 50,
+    borderColor: "rgba(1,90,131,255)",
+    borderTopWidth: 3,
+    borderLeftWidth: 3,
+    borderRightWidth: 3,
+    backgroundColor: "#B7C4CF",
+    justifyContent: "space-between",
+    flexDirection: "row",
+  },
+  routineContainerBottom: {
+    backgroundColor: "white",
+    padding: 20,
+    borderColor: "rgba(1,90,131,255)",
+    borderWidth: 3,
+  },
+  brandName: {
+    color: "gray",
+    fontFamily: "PlayfairDisplay-Bold",
+    fontSize: 15,
+  },
+  productName: {
+    color: "rgba(1, 90, 131, 255)",
+    fontFamily: "Lato-Bold",
+    marginBottom: 5,
+    fontSize: 15,
+  },
+  likesText: {
+    fontFamily: "PlayfairDisplay-Bold",
+    fontSize: 15,
   },
 });
 
