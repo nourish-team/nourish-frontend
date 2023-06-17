@@ -5,7 +5,15 @@ import React, {
   useState,
   useCallback,
 } from "react";
-import { Text, View, StyleSheet, Image, TouchableOpacity } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  Dimensions,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../navigation/types";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -43,9 +51,9 @@ const UserPageScreen: React.FC = () => {
       );
       const data = await response.json();
       console.log("LONG DATA ", data.productsOfRoutines);
+      console.log("USERRR ", data.routinesByUser);
       setUserRoutines(data.routinesByUser);
       setUserProducts(data.productsOfRoutines);
-      console.log("USER ROUTINE STATE ", userRoutines);
     } catch (error) {
       setFetchRoutinesError(false);
     }
@@ -69,20 +77,32 @@ const UserPageScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.titleContainer}>
-        <Text style={styles.titleText}>nourish.</Text>
+      <View style={styles.imageContainer}>
         <Image
-          style={styles.tinyLogo}
-          source={require("../../assets/images/nourish_logo.png")}
+          source={require("../../assets/images/blue-curtain.png")}
+          style={styles.image}
+          resizeMode="stretch"
         />
       </View>
-      <View style={styles.line} />
-      <Text style={styles.infoText}>My Routines</Text>
+      <View style={styles.titleContainer}>
+        <Text style={styles.titleText}>My Routines</Text>
+        <View style={styles.createButtonContainer}>
+          <TouchableOpacity onPress={handleCreateNewRoutinePress}>
+            <AntDesign name="pluscircle" size={35} color="white" />
+          </TouchableOpacity>
+        </View>
+      </View>
+      <Image
+        source={require("../../assets/images/apply-skincare-logo.png")}
+        style={styles.logo}
+        resizeMode="contain"
+      />
+      <Text style={styles.separator}>⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹</Text>
       {fetchRoutinesError ? (
         <Text>There was an error fetching routines</Text>
       ) : null}
-      {userRoutines.map((routine) => {
-        return (
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {userRoutines.map((routine) => (
           <TouchableOpacity
             style={styles.card}
             key={routine.id}
@@ -94,96 +114,100 @@ const UserPageScreen: React.FC = () => {
               )
             }
           >
-            <Text>{routine.routine_name}</Text>
+            <View style={styles.cardContainer}>
+              <Text style={styles.cardTitle}>{routine.routine_name}</Text>
+              <Text style={styles.stepText}>
+                {routine.routine_product.length}{" "}
+                {routine.routine_product.length > 1 ? (
+                  <Text>Steps</Text>
+                ) : (
+                  <Text>Step</Text>
+                )}
+              </Text>
+            </View>
           </TouchableOpacity>
-        );
-      })}
-      <View style={styles.createButtonContainer}>
-        <TouchableOpacity onPress={handleCreateNewRoutinePress}>
-          <AntDesign name="pluscircle" size={50} color="rgba(1,90,131,255)" />
-        </TouchableOpacity>
-      </View>
+        ))}
+      </ScrollView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 70,
     flex: 1,
-    backgroundColor: "#FFFDD0",
-    paddingLeft: 20,
-    paddingRight: 20,
+    backgroundColor: "white",
+  },
+  imageContainer: {
+    position: "absolute",
+    top: 0,
+    height: Dimensions.get("window").height * 0.15,
+    width: Dimensions.get("window").width,
+  },
+  image: {
+    height: "100%",
+    width: "100%",
+  },
+  logo: {
+    height: 140,
+    width: 140,
+    alignSelf: "center",
   },
   titleContainer: {
     flexDirection: "row",
-    alignItems: "flex-start",
-    marginBottom: 10,
-  },
-  tinyLogo: {
-    width: 40,
-    height: 40,
-    marginTop: -7,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 10,
   },
   titleText: {
-    textAlign: "left",
-    fontSize: 40,
-    fontFamily: "PlayfairDisplay-Bold",
-    color: "rgba(1,90,131,255)",
-    marginBottom: 20,
-    marginTop: -20,
-  },
-  line: {
-    width: "100%",
-    height: 2,
-    backgroundColor: "rgba(1,90,131,255)",
-    marginTop: -10,
-  },
-  infoText: {
-    textAlign: "center",
-    fontSize: 18,
+    fontSize: 20,
     fontFamily: "Lato-Bold",
-    color: "rgba(1,90,131,255)",
-    lineHeight: 25,
-    marginBottom: 30,
-    marginTop: 15,
-  },
-  buttonContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  buttonRow: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 20,
-  },
-  button: {
-    width: 100,
-    height: 100,
-    backgroundColor: "rgba(1,90,131,255)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  buttonText: {
     color: "white",
-    fontSize: 16,
-    fontFamily: "Lato-Bold",
+    letterSpacing: 1.5,
+    marginBottom: 30,
+    marginTop: Dimensions.get("window").height * 0.06,
+    textAlign: "center",
   },
-  buttonMargin: {
-    marginLeft: 25,
-  },
-  createButtonContainer: {
-    position: "absolute",
-    bottom: 130,
-    right: 20,
+  scrollContainer: {
+    flexGrow: 1,
+    paddingBottom: 150,
+    padding: 30,
   },
   card: {
-    backgroundColor: "#FFF",
-    padding: 10,
-    marginBottom: 10,
-    borderRadius: 5,
     borderWidth: 1,
-    borderColor: "rgba(1, 90, 131, 255)",
+    borderColor: "transparent",
+    borderRadius: 50,
+    backgroundColor: "#EEE3CB",
+    padding: 10,
+    marginBottom: 20,
+    height: 80,
+    justifyContent: "center",
+  },
+  cardTitle: {
+    fontFamily: "Lato-BoldItalic",
+    fontSize: 18,
+    color: "rgba(1,90,131,255)",
+  },
+  createButtonContainer: {
+    marginBottom: 20,
+    position: "absolute",
+    top: 50,
+    right: 15,
+  },
+  cardContainer: {
+    justifyContent: "space-around",
+    paddingLeft: 15,
+    paddingRight: 15,
+  },
+  stepText: {
+    fontFamily: "Lato-Bold",
+    fontSize: 15,
+    paddingTop: 2,
+    color: "gray",
+  },
+  separator: {
+    color: "rgba(1,90,131,255)",
+    fontSize: 15,
+    textAlign: "center",
   },
 });
 
