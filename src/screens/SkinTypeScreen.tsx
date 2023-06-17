@@ -61,6 +61,9 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
         const routineWithLike = {
           ...routine,
           liked: likedRoutineIds.includes(routine.id),
+          // _count: {
+          //   likes: routine._count.likes,
+          // },
           products,
         };
 
@@ -73,8 +76,9 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
     }
   };
 
-  const handelPostLike = async (routineId: number) => {
-    console.log("user id", userId, "routine", routineId, "was clicked clicked");
+  const handlePostLike = async (routineId: number) => {
+    console.log("User ID:", userId, "Routine ID:", routineId, "was clicked");
+
     const postReq = {
       users_id: userId,
       routines_id: routineId,
@@ -90,25 +94,36 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
         body: JSON.stringify(postReq),
       });
 
-      setRoutinesByType((prevRoutines) =>
-        prevRoutines.map((routine) => {
-          if (routine.id === routineId) {
-            return {
-              ...routine,
-              liked: true,
-            };
-          }
-          return routine;
-        })
-      );
+      if (response.ok) {
+        setRoutinesByType((prevRoutines) =>
+          prevRoutines.map((routine) => {
+            if (routine.id === routineId) {
+              let newLikesCount = routine._count?.likes
+                ? routine._count.likes + 1
+                : 1;
+              return {
+                ...routine,
+                liked: true,
+                _count: {
+                  ...routine._count,
+                  likes: newLikesCount,
+                },
+              };
+            }
+            return routine;
+          })
+        );
+      } else {
+        console.error("Failed to post like:", response.status);
+      }
     } catch (error) {
-      console.error(error);
+      console.error("Failed to post like:", error);
     }
   };
 
   return (
     <View style={styles.container}>
-      {fetchRoutinesError ? <Text>Oops, something went wrong</Text> : null}
+      {fetchRoutinesError && <Text>Oops, something went wrong</Text>}
       <Text>You selected {skincareType} skin type</Text>
       {routinesByType.map((routine: any) => (
         <View key={routine.id} style={styles.routineContainer}>
@@ -124,17 +139,16 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
           <Text style={styles.createdAt}>{routine.created_at}</Text>
           <TouchableOpacity
             style={styles.likeButton}
-            onPress={() => handelPostLike(routine.id)}
+            onPress={() => handlePostLike(routine.id)}
           >
             {routine.liked ? (
               <Icon name="heart" size={20} color="#FFD1DC" />
             ) : (
               <Icon name="heart-o" size={20} />
             )}
-
             <Text>Like</Text>
           </TouchableOpacity>
-          <Text>{routine["_count"].likes}</Text>
+          <Text>{routine._count.likes}</Text>
         </View>
       ))}
       <Button title="Back" onPress={handleBackPress} />
@@ -175,41 +189,5 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
 });
-
-//   return (
-//     <View style={styles.container}>
-//       <Text>You selected {skincareType} skin type</Text>
-//       {routinesByType.map((routine: any) => (
-//         <View style={styles.routine} key={routine.id}>
-//           <Text>{routine.routine_name}</Text>
-//           <Text>{routine.routine_product}</Text>
-//           <Text>{routine.created_at}</Text>
-//           <Pressable style={styles.button} onPress={() => handelPostLike(routine.id)}>
-//             <Text>Like</Text>
-//           </Pressable>
-
-//         </View>
-//       ))}
-//       <Button title="Back" onPress={handleBackPress} />
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     paddingTop: 70,
-//     flex: 1,
-//     backgroundColor: "#FFFDD0",
-//     paddingLeft: 20,
-//     paddingRight: 20,
-//   },
-//   routine: {
-//     marginBottom: 20
-//   },
-//   button: {
-//       width: 60,
-//       backgroundColor: "#FFB6C1",
-//   }
-// });
 
 export default SkincareTypeScreen;
