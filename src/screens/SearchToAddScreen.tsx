@@ -44,6 +44,14 @@ const SearchToAddScreen: React.FC<Props> = ({ route, navigation }) => {
 
   useEffect(() => {}, [routineId]);
 
+  const handleBackPress = () => {
+    navigation.navigate("UserRoutinePageScreen", {
+      routineId,
+      routineName,
+      routineProduct,
+    });
+  };
+
   const handleSearchItem = async (brand: string) => {
     console.log("BRAND ", brand);
     try {
@@ -69,7 +77,7 @@ const SearchToAddScreen: React.FC<Props> = ({ route, navigation }) => {
       setFetchItemsError(true);
       setCurrentPage(1);
       setTotalPages(1);
-    } 
+    }
   };
 
   const handleItemSelect = async (itemId: number) => {
@@ -132,26 +140,32 @@ const SearchToAddScreen: React.FC<Props> = ({ route, navigation }) => {
           onPress={() => handleSearchItem(searchQuery)}
           style={styles.button}
         >
-          <Text style={styles.buttonText}>Search {routineId}</Text>
+          <Text style={styles.buttonText}>Search</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handleBackPress}>
+          <Text style={styles.backButtonText}>Back</Text>
         </TouchableOpacity>
       </View>
-      {searchResults.length > 0 && (
-      <View style={styles.resultContainer}>
-        {fetchItemsError ? <Text>Oops! Brand not found</Text> : null}
-        <FlatList
-          data={paginatedData}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              onPress={() => handleItemSelect(item.id)}
-              style={styles.card}
-            >
-              <Text>{item.product_name}</Text>
-            </TouchableOpacity>
-          )}
-          keyExtractor={(item) => item.id.toString()}
-          />
-          <View style={styles.paginationContainer}>
-            <TouchableOpacity
+      <View style={styles.resultsParentContainer}>
+        {searchResults.length > 0 && (
+          <View style={styles.resultContainer}>
+            {fetchItemsError ? <Text>Oops! Brand not found</Text> : null}
+            <View>
+              <FlatList
+                data={paginatedData}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    onPress={() => handleItemSelect(item.id)}
+                    style={styles.card}
+                  >
+                    <Text style={styles.cardText}>{item.product_name}</Text>
+                  </TouchableOpacity>
+                )}
+                keyExtractor={(item) => item.id.toString()}
+              />
+            </View>
+            <View style={styles.paginationButtonContainer}>
+              <TouchableOpacity
                 onPress={handlePreviousPage}
                 disabled={currentPage === 1}
                 style={[
@@ -172,8 +186,9 @@ const SearchToAddScreen: React.FC<Props> = ({ route, navigation }) => {
                 <Text style={styles.paginationButtonText}>Next</Text>
               </TouchableOpacity>
             </View>
+          </View>
+        )}
       </View>
-      )}
     </View>
   );
 };
@@ -181,15 +196,14 @@ const SearchToAddScreen: React.FC<Props> = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFDD0",
-    paddingTop: 70,
-    paddingLeft: 45,
-    paddingRight: 45,
-    paddingBottom: 70,
+    backgroundColor: "white",
   },
   searchContainer: {
     alignItems: "center",
     marginBottom: 10,
+    marginTop: 70,
+    paddingLeft: 45,
+    paddingRight: 45,
   },
   titleText: {
     color: "rgba(1, 90, 131, 255)",
@@ -221,35 +235,56 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Lato-Bold",
   },
+  backButtonText: {
+    fontSize: 16,
+    fontFamily: "Lato-Bold",
+    textDecorationLine: "underline",
+    marginBottom: 5,
+    marginTop: -5,
+  },
   resultContainer: {
     flex: 1,
     marginTop: 10,
   },
   card: {
-    backgroundColor: "#FFF",
-    padding: 10,
+    backgroundColor: "#EEE3CB",
+    padding: 18,
     marginBottom: 10,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: "rgba(1, 90, 131, 255)",
+    borderRadius: 30,
+    borderColor: "transparent",
   },
-  paginationContainer: {
+  cardText: {
+    fontFamily: "Lato-Bold",
+    fontSize: 16,
+  },
+  paginationButtonContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 10,
   },
   paginationButton: {
     paddingHorizontal: 10,
     paddingVertical: 5,
     marginHorizontal: 5,
-    backgroundColor: "rgba(1, 90, 131, 255)",
+    backgroundColor: "white",
+    width: 150,
   },
   disabledButton: {
     opacity: 0.5,
   },
   paginationButtonText: {
-    color: "white",
+    color: "rgba(1, 90, 131, 255)",
+    fontFamily: "Lato-Bold",
+    textAlign: "center",
+    fontSize: 20,
+  },
+  resultsParentContainer: {
+    backgroundColor: "#B7C4CF",
+    width: "100%",
+    height: "100%",
+    borderTopRightRadius: 20,
+    borderTopLeftRadius: 20,
+    padding: 30,
   },
 });
 
