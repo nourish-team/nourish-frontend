@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Modal, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Modal,
+  StyleSheet,
+  Image,
+  Dimensions,
+} from "react-native";
 import { signOut, getAuth, deleteUser } from "firebase/auth";
 
 const UserAccountScreen: React.FC = () => {
@@ -39,15 +47,29 @@ const UserAccountScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={handleAccountLogout}>
+      <View style={styles.imageContainer}>
+        <Image
+          source={require("../../assets/images/blue-curtain.png")}
+          style={styles.image}
+          resizeMode="stretch"
+        />
+      </View>
+      <View style={styles.titleContainer}>
+        <Text style={styles.titleText}>My Account</Text>
+      </View>
+
+      <TouchableOpacity style={styles.card} onPress={handleAccountLogout}>
         <Text style={styles.text}>Logout</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => setShowConfirmDelete(true)}>
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => setShowConfirmDelete(true)}
+      >
         <Text style={styles.text}>Delete Account</Text>
       </TouchableOpacity>
       <Modal visible={showConfirmDelete} animationType="slide">
         <View style={styles.modalContent}>
-          <Text style={styles.modalContent}>
+          <Text style={styles.modalText}>
             Are you absolutely sure you want to delete your account? We'll miss
             having you as part of our community.
           </Text>
@@ -74,12 +96,12 @@ const UserAccountScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: "white",
   },
   text: {
     fontSize: 20,
-    marginBottom: 20,
+    fontFamily: "Lato-Bold",
+    textAlign: "center",
   },
   modal: {
     margin: 0,
@@ -89,7 +111,11 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    padding: 20,
+    padding: 30,
+  },
+  modalText: {
+    fontFamily: "Lato-Bold",
+    fontSize: 30,
   },
   buttonContainer: {
     marginTop: 10,
@@ -97,17 +123,54 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   button: {
-    backgroundColor: "lightblue",
+    backgroundColor: "rgba(1,90,131,255)",
     padding: 10,
-    borderRadius: 8,
     alignItems: "center",
     flex: 1,
-    marginHorizontal: 5,
+    marginHorizontal: 15,
+    marginTop: 10,
   },
   buttonText: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: "bold",
     color: "white",
+  },
+  imageContainer: {
+    position: "absolute",
+    top: 0,
+    height: Dimensions.get("window").height * 0.15,
+    width: Dimensions.get("window").width,
+  },
+  image: {
+    height: "100%",
+    width: "100%",
+  },
+  titleContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 10,
+    marginBottom: 40,
+  },
+  titleText: {
+    fontSize: 20,
+    fontFamily: "Lato-Bold",
+    color: "white",
+    letterSpacing: 1.5,
+    marginBottom: 30,
+    marginTop: Dimensions.get("window").height * 0.06,
+    textAlign: "center",
+  },
+  card: {
+    borderWidth: 1,
+    borderColor: "transparent",
+    borderRadius: 50,
+    backgroundColor: "#EEE3CB",
+    marginBottom: 30,
+    height: 80,
+    width: 200,
+    justifyContent: "center",
+    alignSelf: "center",
   },
 });
 
