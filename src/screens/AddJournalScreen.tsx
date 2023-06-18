@@ -40,6 +40,7 @@ const AddJournalScreen: React.FC<Props> = ({ route, navigation }) => {
   const { userId } = useContext(UserContext);
   const [text, onChangeText] = useState("");
   const [isPickerShown, setIsPickerShown] = useState(false);
+  const [clickedInputBox, setClickedInputBox] = useState(false);
 
   const handleBackPress = () => {
     navigation.goBack();
@@ -116,17 +117,24 @@ const AddJournalScreen: React.FC<Props> = ({ route, navigation }) => {
                 <Text style={styles.dateButtonText}>Change Date</Text>
               </TouchableOpacity>
             </View>
+            {text.length < 10 && clickedInputBox && (
+              <Text style={styles.errorMessage}>
+                Minimum 10-character comment required.
+              </Text>
+            )}
             <View style={styles.comment}>
               <TextInput
                 id="comment"
                 placeholder="Comment here"
                 onChangeText={onChangeText}
+                onPressIn={() => setClickedInputBox(true)}
                 value={text}
                 multiline
                 maxLength={380}
                 style={styles.commentText}
               />
             </View>
+
             <View style={styles.submitContainer}>
               <View style={styles.photoUpload}>
                 <PhotoUploadScreen image={image} setImage={setImage} />
@@ -135,8 +143,16 @@ const AddJournalScreen: React.FC<Props> = ({ route, navigation }) => {
                 <TouchableOpacity
                   style={styles.submitButton}
                   onPress={handleSubmitInfo}
+                  disabled={text.length < 10}
                 >
-                  <Text style={styles.submitButtonText}>Submit</Text>
+                  <Text
+                    style={[
+                      styles.submitButtonText,
+                      text.length < 10 ? styles.submitButtonDisabled : {},
+                    ]}
+                  >
+                    Submit
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -335,6 +351,15 @@ const styles = StyleSheet.create({
   },
   submitButtonText: {
     fontFamily: "Lato-Bold",
+  },
+  submitButtonDisabled: {
+    color: "#A40606",
+  },
+  errorMessage: {
+    color: "#A40606",
+    fontSize: 12,
+    marginTop: 10,
+    marginHorizontal: -10,
   },
 });
 

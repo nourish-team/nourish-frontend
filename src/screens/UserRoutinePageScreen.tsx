@@ -56,7 +56,7 @@ const UserRoutinePageScreen: React.FC<Props> = ({ route, navigation }) => {
   };
 
   const handleJournalHistoryPress = () => {
-    navigation.navigate("JournalHistoryScreen", { routineId });
+    navigation.navigate("JournalHistoryScreen", { routineId, routineName });
   };
 
   const handleAddProduct = () => {
