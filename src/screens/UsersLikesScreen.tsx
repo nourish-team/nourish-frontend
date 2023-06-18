@@ -233,10 +233,11 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   logo: {
-    height: 120,
-    width: 120,
+    height: 170,
+    width: 170,
     alignSelf: "center",
-    marginTop: 10,
+    marginTop: -30,
+    marginBottom: -12,
   },
   separator: {
     color: "rgba(1,90,131,255)",
