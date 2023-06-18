@@ -78,6 +78,7 @@ const AddJournalScreen: React.FC<Props> = ({ route, navigation }) => {
       if (response.ok) {
         alert("Comment successfully made!");
         onChangeText("");
+        handleBackPress();
       }
     } catch (err) {
       console.error(err);
@@ -214,7 +215,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "lightgrey",
-    width: 100,
+    width: 110,
     height: 35,
     borderRadius: 20,
     borderColor: "transparent",
