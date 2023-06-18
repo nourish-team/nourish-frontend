@@ -10,11 +10,16 @@ export default function PhotoUploadScreen({
   image: string;
   setImage: (value: string) => void;
 }) {
+  const [loading, setLoading] = useState(false);
+  const [selected, setSelected] = useState(false);
+
   const pickImage = async () => {
+    setLoading(true);
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
 
     if (permissionResult.granted === false) {
       alert("Permision to access camera roll is required");
+      setLoading(false);
       return;
     }
 
@@ -33,6 +38,8 @@ export default function PhotoUploadScreen({
           upload_preset: UPLOAD_PRESET,
         };
 
+        setLoading(false);
+
         try {
           fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`, {
             method: "POST",
@@ -44,6 +51,7 @@ export default function PhotoUploadScreen({
             .then((res) => res.json())
             .then((r) => {
               setImage(r.secure_url);
+              setSelected(true);
             });
         } catch (err) {
           console.error(err);
@@ -55,11 +63,17 @@ export default function PhotoUploadScreen({
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
       <TouchableOpacity onPress={pickImage}>
-        <Text style={styles.text}>select image</Text>
+        {loading ? (
+          <Text style={styles.text}>Loading...</Text>
+        ) : selected ? (
+          <Text style={styles.text}>Image Selected</Text>
+        ) : (
+          <Text style={styles.text}>Select Image</Text>
+        )}
       </TouchableOpacity>
-      {image && (
+      {/* {image && (
         <Image source={{ uri: image }} style={{ width: 100, height: 100 }} />
-      )}
+      )} */}
     </View>
   );
 }
