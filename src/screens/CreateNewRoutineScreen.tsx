@@ -50,7 +50,12 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
   const [error, setError] = useState(false);
   const [createButtonDisabled, setCreateButtonDisabled] = useState(true);
   const [description, setDescription] = useState("");
-  const [weatherType, setWeatherType] = useState("");
+  const weatherTypeOptions = [
+    "hot air",
+    "dry air",
+    "humid air",
+  ];
+  const [weatherType, setWeatherType] = useState<string>("");
 
   useEffect(() => {
     if (selectedItems && selectedItems.length > 0) {
@@ -64,13 +69,15 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
       savedItems.length > 0 &&
       routineName &&
       selectedSkinType !== "" &&
-      selectedSkinType
+      selectedSkinType &&
+      weatherType !== "" &&
+      weatherType
     ) {
       setCreateButtonDisabled(false);
     } else {
       setCreateButtonDisabled(true);
     }
-  }, [routineName, selectedSkinType, savedItems]);
+  }, [routineName, selectedSkinType, savedItems, weatherType]);
 
   const handleCancelButtonPress = () => {
     navigation.navigate("HomeScreen");
@@ -133,6 +140,10 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
     setSelectedSkinType(skinType);
   };
 
+  const handleWeatherTypeSelect = (weatherType: string) => {
+    setWeatherType(weatherType);
+  };
+
   return (
     <View style={styles.container}>
       {error ? (
@@ -151,6 +162,16 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
       >
         <Picker.Item label="Select skin type" value={""} />
         {skinTypeOptions.map((option, index) => (
+          <Picker.Item key={index} label={option} value={option} />
+        ))}
+      </Picker>
+      <Picker
+        selectedValue={weatherType}
+        onValueChange={handleWeatherTypeSelect}
+        style={styles.picker}
+      >
+        <Picker.Item label="Select weather type" value={""} />
+        {weatherTypeOptions.map((option, index) => (
           <Picker.Item key={index} label={option} value={option} />
         ))}
       </Picker>
