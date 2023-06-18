@@ -62,12 +62,15 @@ const UserPageScreen: React.FC = () => {
   const handleRoutinePress = (
     routineId: number,
     routineName: string,
-    routineProduct: number[]
+    routineProduct: number[],
+    routineDescription: string
   ) => {
+    console.log("UM IS THERE A DESC? ", routineDescription);
     navigation.navigate("UserRoutinePageScreen", {
       routineId,
       routineName,
       routineProduct,
+      routineDescription,
     });
   };
 
@@ -110,7 +113,8 @@ const UserPageScreen: React.FC = () => {
               handleRoutinePress(
                 routine.id,
                 routine.routine_name,
-                routine.routine_product
+                routine.routine_product,
+                routine.description
               )
             }
           >
