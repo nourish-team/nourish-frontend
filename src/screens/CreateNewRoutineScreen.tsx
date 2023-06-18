@@ -49,6 +49,13 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
   const [isPublic, setIsPublic] = useState(false);
   const [error, setError] = useState(false);
   const [createButtonDisabled, setCreateButtonDisabled] = useState(true);
+  const [description, setDescription] = useState("");
+  const weatherTypeOptions = [
+    "hot air",
+    "dry air",
+    "humid air",
+  ];
+  const [weatherType, setWeatherType] = useState<string>("");
 
   useEffect(() => {
     if (selectedItems && selectedItems.length > 0) {
@@ -62,13 +69,15 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
       savedItems.length > 0 &&
       routineName &&
       selectedSkinType !== "" &&
-      selectedSkinType
+      selectedSkinType &&
+      weatherType !== "" &&
+      weatherType
     ) {
       setCreateButtonDisabled(false);
     } else {
       setCreateButtonDisabled(true);
     }
-  }, [routineName, selectedSkinType, savedItems]);
+  }, [routineName, selectedSkinType, savedItems, weatherType]);
 
   const handleCancelButtonPress = () => {
     navigation.navigate("HomeScreen");
@@ -101,6 +110,8 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
       skin_type: selectedSkinType,
       routine_product: routineProducts,
       public: isPublic,
+      weather_type: weatherType,
+      description: description,
     };
 
     try {
@@ -129,6 +140,10 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
     setSelectedSkinType(skinType);
   };
 
+  const handleWeatherTypeSelect = (weatherType: string) => {
+    setWeatherType(weatherType);
+  };
+
   return (
     <View style={styles.container}>
       {error ? (
@@ -150,12 +165,32 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
           <Picker.Item key={index} label={option} value={option} />
         ))}
       </Picker>
+      <Picker
+        selectedValue={weatherType}
+        onValueChange={handleWeatherTypeSelect}
+        style={styles.picker}
+      >
+        <Picker.Item label="Select weather type" value={""} />
+        {weatherTypeOptions.map((option, index) => (
+          <Picker.Item key={index} label={option} value={option} />
+        ))}
+      </Picker>
       <TouchableOpacity
         style={styles.createButton}
         onPress={handleAddProductsPress}
       >
         <Text style={styles.createButtonText}>Add Products</Text>
       </TouchableOpacity>
+      <View style={styles.descriptionContainer}>
+        <Text style={styles.descriptionTitle}>Description</Text>
+        <TextInput
+        value={description}
+        onChangeText={setDescription}
+        placeholder="Enter description your routine"
+        multiline
+        style={styles.descriptionBox}
+        />
+      </View>
       <TouchableOpacity
         style={styles.createButton}
         onPress={handleCreateRoutine}
@@ -182,6 +217,7 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
         <Text>No selected items</Text>
       )}
       <Text>User id is {userId}</Text>
+      <Text>Description is {description}</Text>
     </View>
   );
 };
@@ -204,6 +240,24 @@ const styles = StyleSheet.create({
     padding: 15,
     color: "rgba(1, 90, 131, 255)",
     fontFamily: "PlayfairDisplay-Bold",
+  },
+  descriptionContainer: {
+    marginBottom: 10,
+  },
+  descriptionTitle: {
+    fontSize: 16,
+    color: "rgba(1, 90, 131, 255)",
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  descriptionBox: {
+    width: 300,
+    height: 150,
+    borderWidth: 1,
+    borderColor: "rgba(1, 90, 131, 255)",
+    padding: 10,
+    textAlignVertical: "top", 
+    textAlign: "left",
   },
   createButton: {
     width: 300,
