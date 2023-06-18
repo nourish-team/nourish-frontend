@@ -8,6 +8,7 @@ import {
   Image,
   Dimensions,
   ScrollView,
+  Modal
 } from "react-native";
 import { ParamListBase, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -18,6 +19,7 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
   const { skincareType } = route.params;
   const [routinesByType, setRoutinesByType] = useState<any[]>([]);
   const [fetchRoutinesError, setFetchRoutinesError] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const { userId } = useContext(UserContext);
 
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
@@ -123,6 +125,14 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
     }
   };
 
+  const handleModal = () => {
+    setModalVisible(!modalVisible)
+  };
+
+  const handleFilterCategory = (e: string) => {
+    console.log(e)
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
@@ -138,6 +148,44 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
       <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
         <Text style={styles.backText}>Back</Text>
       </TouchableOpacity>
+      <View style={styles.filter}>
+          <TouchableOpacity style={styles.backButton} onPress={handleModal}>
+            <Text style={styles.backText}>Filter</Text>
+          </TouchableOpacity>
+          <Modal visible={modalVisible}  animationType="slide" transparent={true}>
+            <View style={styles.modalView}>
+            <Text style={styles.categoryTitle}>Filter On:</Text>
+              <View style={styles.filterTag}>
+                <Text style={styles.categoryTitle}>Weather Type</Text>
+                <View style={styles.category}>
+                  <TouchableOpacity style={styles.categoryTag} onPress={() => handleFilterCategory("dry air")}>
+                    <Text style={styles.categoryText}>dry air</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.categoryTag}  onPress={() => handleFilterCategory("hot air")}>
+                    <Text style={styles.categoryText}>hot air</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.categoryTag} onPress={() => handleFilterCategory("humid air")}>
+                    <Text style={styles.categoryText}>humid air</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+              <View style={styles.filterTag}>
+                <Text style={styles.categoryTitle}>Likes</Text>
+                <View style={styles.category}>
+                  <TouchableOpacity style={styles.categoryTag}>
+                    <Text style={styles.categoryText}>highest</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.categoryTag}>
+                    <Text style={styles.categoryText}>lowest</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+              <TouchableOpacity style={styles.backButton} onPress={handleModal}>
+                <Text style={styles.backText}>Back</Text>
+              </TouchableOpacity>
+            </View>
+          </Modal>
+      </View>
       {fetchRoutinesError && <Text>Oops, something went wrong</Text>}
       <ScrollView>
         {routinesByType.map((routine: any) => (
@@ -284,6 +332,41 @@ const styles = StyleSheet.create({
     fontFamily: "PlayfairDisplay-Bold",
     fontSize: 15,
   },
+  modalView: {
+    backgroundColor: "white",
+    height: "50%",
+    marginTop: "auto"
+  },
+  filter: {
+    height: 90,
+    marginBottom: 8
+  },
+  filterTag: {
+    padding: 15,
+  },
+  category: {
+    height: 50,
+    margin: 20,
+    padding: 4,
+    display: "flex",
+    flexDirection: "row"
+  },
+  categoryTag: {
+    margin: 5,
+    width: 90,
+    padding: 5,
+    borderRadius: 30,
+    backgroundColor: "#B7C4CF",
+  },
+  categoryText: {
+    textAlign: "center",
+    fontFamily: "Lato-Bold",
+    fontSize: 15,
+  },
+  categoryTitle: {
+    fontFamily: "PlayfairDisplay-Bold",
+    fontSize: 20,
+  }
 });
 
 export default SkincareTypeScreen;
