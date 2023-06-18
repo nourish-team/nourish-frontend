@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Image, View, Platform } from "react-native";
+import { Image, View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { UPLOAD_PRESET, CLOUD_NAME } from "@env";
 
@@ -54,10 +54,18 @@ export default function PhotoUploadScreen({
 
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Button title="Pick an image from camera roll" onPress={pickImage} />
+      <TouchableOpacity onPress={pickImage}>
+        <Text style={styles.text}>select image</Text>
+      </TouchableOpacity>
       {image && (
         <Image source={{ uri: image }} style={{ width: 100, height: 100 }} />
       )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  text: {
+    fontFamily: "Lato-Bold",
+  },
+});
