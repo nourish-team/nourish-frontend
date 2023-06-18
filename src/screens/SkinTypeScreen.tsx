@@ -20,6 +20,8 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
   const [routinesByType, setRoutinesByType] = useState<any[]>([]);
   const [fetchRoutinesError, setFetchRoutinesError] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [filterCategory, setFilterCategory] = useState("all");
+  const [displayRoutines, setdisplayRoutines] = useState<any[]>(routinesByType);
   const { userId } = useContext(UserContext);
 
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
@@ -31,6 +33,8 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
   useEffect(() => {
     fetchRoutinesByType();
   }, []);
+
+ 
 
   const fetchRoutinesByType = async () => {
     try {
@@ -129,8 +133,29 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
     setModalVisible(!modalVisible)
   };
 
-  const handleFilterCategory = (e: string) => {
-    console.log(e)
+  const filterOnCategory = (category: any) => {
+    if(category !== "all") {
+     const filterData = routinesByType.filter(routine => {
+        return routine["weather_type"] === category;
+      })
+      setRoutinesByType(filterData);
+    } else {
+      fetchRoutinesByType();
+    }
+  };
+
+  const filterOnLikes = (category: string) => {
+    if(category === "lowest") {
+      const filterdata = routinesByType.sort((a, b) => {
+        return a._count.likes - b._count.likes;
+      })
+      setRoutinesByType(filterdata);
+    } else {
+      const filterdata = routinesByType.sort((a, b) => {
+        return b._count.likes - a._count.likes;
+      })
+      setRoutinesByType(filterdata);
+    }
   }
 
   return (
@@ -158,24 +183,27 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
               <View style={styles.filterTag}>
                 <Text style={styles.categoryTitle}>Weather Type</Text>
                 <View style={styles.category}>
-                  <TouchableOpacity style={styles.categoryTag} onPress={() => handleFilterCategory("dry air")}>
+                  <TouchableOpacity style={styles.categoryTag} onPress={() => filterOnCategory("dry air")}>
                     <Text style={styles.categoryText}>dry air</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.categoryTag}  onPress={() => handleFilterCategory("hot air")}>
+                  <TouchableOpacity style={styles.categoryTag}  onPress={() => filterOnCategory("hot air")}>
                     <Text style={styles.categoryText}>hot air</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.categoryTag} onPress={() => handleFilterCategory("humid air")}>
+                  <TouchableOpacity style={styles.categoryTag} onPress={() => filterOnCategory("humid air")}>
                     <Text style={styles.categoryText}>humid air</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.categoryTag} onPress={() => filterOnCategory("all")}>
+                    <Text style={styles.categoryText}>all</Text>
                   </TouchableOpacity>
                 </View>
               </View>
               <View style={styles.filterTag}>
                 <Text style={styles.categoryTitle}>Likes</Text>
                 <View style={styles.category}>
-                  <TouchableOpacity style={styles.categoryTag}>
+                  <TouchableOpacity style={styles.categoryTag} onPress={() => filterOnLikes("highest")}>
                     <Text style={styles.categoryText}>highest</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.categoryTag}>
+                  <TouchableOpacity style={styles.categoryTag} onPress={() => filterOnLikes("lowest")}>
                     <Text style={styles.categoryText}>lowest</Text>
                   </TouchableOpacity>
                 </View>
@@ -338,15 +366,15 @@ const styles = StyleSheet.create({
     marginTop: "auto"
   },
   filter: {
-    height: 90,
-    marginBottom: 8
+    height: 80,
   },
   filterTag: {
     padding: 15,
   },
   category: {
     height: 50,
-    margin: 20,
+    margin: 10,
+    marginLeft: 0,
     padding: 4,
     display: "flex",
     flexDirection: "row"
