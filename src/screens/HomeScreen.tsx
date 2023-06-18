@@ -117,34 +117,34 @@ const HomeScreen: React.FC = () => {
     const currentDateTime = currentDate.getTime();
     const cacheExpirationDateTime = cacheExpirationDate.getTime();
 
-    if (currentDateTime >= cacheExpirationDateTime) {
-      const response = await fetch(
-        `https://api.weatherapi.com/v1/current.json?key=9eb1bd24a3fc487a82504534231406&q=${location}&aqi=no`
-      );
+    try {
+      let data;
 
-      if (response.ok) {
-        const data = await response.json();
-        setWeatherData(data);
-        console.log(weatherData);
-        // Store the weather data in AsyncStorage
-        try {
-          await AsyncStorage.setItem("weatherData", JSON.stringify(data));
-        } catch (error) {
-          console.log("Error saving weather data:", error);
+      if (currentDateTime >= cacheExpirationDateTime) {
+        const response = await fetch(
+          `https://api.weatherapi.com/v1/current.json?key=9eb1bd24a3fc487a82504534231406&q=${location}&aqi=no`
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
+
+        data = await response.json();
+        console.log("Fetched weather data: ", data);
+
+        // Store the weather data in AsyncStorage
+        await AsyncStorage.setItem("weatherData", JSON.stringify(data));
       } else {
-        setWeatherData(null);
-      }
-    } else {
-      // Retrieve weather data from AsyncStorage
-      try {
+        // Retrieve weather data from AsyncStorage
         const storedData = await AsyncStorage.getItem("weatherData");
         if (storedData) {
-          setWeatherData(JSON.parse(storedData));
+          data = JSON.parse(storedData);
         }
-      } catch (error) {
-        console.log("Error retrieving weather data:", error);
       }
+
+      setWeatherData(data);
+    } catch (error) {
+      console.error("Error occurred while fetching weather data: ", error);
     }
   };
 
