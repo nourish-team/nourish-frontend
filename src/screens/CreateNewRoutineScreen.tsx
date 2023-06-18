@@ -49,6 +49,8 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
   const [isPublic, setIsPublic] = useState(false);
   const [error, setError] = useState(false);
   const [createButtonDisabled, setCreateButtonDisabled] = useState(true);
+  const [description, setDescription] = useState("");
+  const [weatherType, setWeatherType] = useState("");
 
   useEffect(() => {
     if (selectedItems && selectedItems.length > 0) {
@@ -101,6 +103,8 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
       skin_type: selectedSkinType,
       routine_product: routineProducts,
       public: isPublic,
+      weather_type: weatherType,
+      description: description,
     };
 
     try {
@@ -156,6 +160,16 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
       >
         <Text style={styles.createButtonText}>Add Products</Text>
       </TouchableOpacity>
+      <View style={styles.descriptionContainer}>
+        <Text style={styles.descriptionTitle}>Description</Text>
+        <TextInput
+        value={description}
+        onChangeText={setDescription}
+        placeholder="Enter description your routine"
+        multiline
+        style={styles.descriptionBox}
+        />
+      </View>
       <TouchableOpacity
         style={styles.createButton}
         onPress={handleCreateRoutine}
@@ -182,6 +196,7 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
         <Text>No selected items</Text>
       )}
       <Text>User id is {userId}</Text>
+      <Text>Description is {description}</Text>
     </View>
   );
 };
@@ -204,6 +219,24 @@ const styles = StyleSheet.create({
     padding: 15,
     color: "rgba(1, 90, 131, 255)",
     fontFamily: "PlayfairDisplay-Bold",
+  },
+  descriptionContainer: {
+    marginBottom: 10,
+  },
+  descriptionTitle: {
+    fontSize: 16,
+    color: "rgba(1, 90, 131, 255)",
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  descriptionBox: {
+    width: 300,
+    height: 150,
+    borderWidth: 1,
+    borderColor: "rgba(1, 90, 131, 255)",
+    padding: 10,
+    textAlignVertical: "top", 
+    textAlign: "left",
   },
   createButton: {
     width: 300,
