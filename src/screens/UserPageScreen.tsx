@@ -94,8 +94,8 @@ const UserPageScreen: React.FC = () => {
         `http://10.0.2.2:8080/routine/user/${userIdToString}`
       );
       const data = await response.json();
-      console.log("LONG DATA ", data.productsOfRoutines);
-      console.log("USERRR ", data.routinesByUser);
+      // console.log("LONG DATA ", data.productsOfRoutines);
+      // console.log("USERRR ", data.routinesByUser);
       setUserRoutines(data.routinesByUser);
       setUserProducts(data.productsOfRoutines);
     } catch (error) {
