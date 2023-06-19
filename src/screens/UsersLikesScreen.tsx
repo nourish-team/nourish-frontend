@@ -86,8 +86,8 @@ const UsersLikesScreen: React.FC = () => {
         <View style={styles.routinesParentContainer}>
           {routines &&
             routines.length > 0 &&
-            routines.map((routine) => (
-              <View>
+            routines.map((routine, index) => (
+              <View key={index}>
                 <View style={styles.vLineContainer}>
                   <View style={styles.vLineLeft} />
                   <View style={styles.vLineRight} />
@@ -228,8 +228,8 @@ const styles = StyleSheet.create({
   productContainer: {
     backgroundColor: "white",
     alignSelf: "flex-start",
-    borderRadius: 30,
-    padding: 10,
+    borderRadius: 40,
+    padding: 15,
     marginBottom: 5,
   },
   logo: {

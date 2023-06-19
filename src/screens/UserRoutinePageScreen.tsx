@@ -209,7 +209,7 @@ const UserRoutinePageScreen: React.FC<Props> = ({ route, navigation }) => {
 
       <View style={styles.titleContainer}>
         <TouchableOpacity onPress={handleBackPress}>
-          <AntDesign name="doubleleft" size={20} color="rgba(1,90,131,255)" />
+          <AntDesign name="doubleleft" size={20} color="#015a83" />
         </TouchableOpacity>
         <Text style={[styles.titleText, styles.buttonMargin]}>
           {routineName}
@@ -290,8 +290,8 @@ const UserRoutinePageScreen: React.FC<Props> = ({ route, navigation }) => {
               </TouchableOpacity>
             </View>
             {products.map((product, index) => (
-              <View key={index} style={styles.card}>
-                <View style={styles.brandContainer}>
+              <View key={product.productId} style={styles.card}>
+                <View key={index} style={styles.brandContainer}>
                   <Text style={styles.brandName}>
                     {product.productBrand.toUpperCase()}
                   </Text>
