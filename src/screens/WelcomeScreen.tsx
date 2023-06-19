@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   copyrightText: {
     textAlign: "center",
     fontSize: 15,
-    fontFamily: "PlayfairDisplay-Black",
+    fontFamily: "PlayfairDisplay-Bold",
     color: "rgba(1,90,131,255)",
     position: "absolute",
     bottom: 20,

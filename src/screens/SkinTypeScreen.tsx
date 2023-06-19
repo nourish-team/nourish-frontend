@@ -8,6 +8,7 @@ import {
   Image,
   Dimensions,
   ScrollView,
+  Modal
 } from "react-native";
 import { ParamListBase, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -18,6 +19,7 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
   const { skincareType } = route.params;
   const [routinesByType, setRoutinesByType] = useState<any[]>([]);
   const [fetchRoutinesError, setFetchRoutinesError] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const { userId } = useContext(UserContext);
 
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
@@ -29,6 +31,11 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
   useEffect(() => {
     fetchRoutinesByType();
   }, []);
+
+  // useEffect(() => {
+  //   console.log(routinesByType);
+  // }, []);
+ 
 
   const fetchRoutinesByType = async () => {
     try {
@@ -123,6 +130,35 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
     }
   };
 
+  const handleModal = () => {
+    setModalVisible(!modalVisible)
+  };
+
+  const filterOnCategory = (category: any) => {
+    if(category !== "all") {
+     const filterData = routinesByType.filter(routine => {
+        return routine["weather_type"] === category;
+      })
+      setRoutinesByType(filterData);
+    } else {
+      fetchRoutinesByType();
+    }
+  };
+
+  const filterOnLikes = (category: string) => {
+    if(category === "lowest") {
+      const filterdata = routinesByType.sort((a, b) => {
+        return a._count.likes - b._count.likes;
+      })
+      setRoutinesByType(filterdata);
+    } else {
+      const filterdata = routinesByType.sort((a, b) => {
+        return b._count.likes - a._count.likes;
+      })
+      setRoutinesByType(filterdata);
+    }
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
@@ -135,14 +171,59 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
       <View style={styles.titleContainer}>
         <Text style={styles.titleText}>{skincareType} routines</Text>
       </View>
-      <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
-        <Text style={styles.backText}>Back</Text>
-      </TouchableOpacity>
+      <View style={styles.navButton}>
+        <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
+          <Text style={styles.backText}>Back</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.backButton} onPress={handleModal}>
+          <Text style={styles.backText}>Filter</Text>
+        </TouchableOpacity>
+      </View>
+      
+      <View style={styles.filter}>
+          <Modal visible={modalVisible}  animationType="slide" transparent={true}>
+            <View style={styles.modalView}>
+            <Text style={styles.titleFilter}>Filter On:</Text>
+              <View style={styles.filterTag}>
+                <View style={styles.category}>
+                  <Text style={styles.categoryTitle}>Weather Type</Text>
+                  <TouchableOpacity style={styles.categoryTag} onPress={() => filterOnCategory("dry air")}>
+                    <Text style={styles.categoryText}>dry air</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.categoryTag}  onPress={() => filterOnCategory("hot air")}>
+                    <Text style={styles.categoryText}>hot air</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.categoryTag} onPress={() => filterOnCategory("humid air")}>
+                    <Text style={styles.categoryText}>humid air</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.categoryTag} onPress={() => filterOnCategory("all")}>
+                    <Text style={styles.categoryText}>all</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+              <View style={styles.filterTag}>
+                <View style={styles.category}>
+                  <Text style={styles.categoryTitle}>Likes</Text>
+                  <TouchableOpacity style={styles.categoryTag} onPress={() => filterOnLikes("highest")}>
+                    <Text style={styles.categoryText}>highest</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.categoryTag} onPress={() => filterOnLikes("lowest")}>
+                    <Text style={styles.categoryText}>lowest</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+              <TouchableOpacity style={styles.backButtonFilter} onPress={handleModal}>
+                <Text style={styles.backText}>Back</Text>
+              </TouchableOpacity>
+            </View>
+          </Modal>
+      </View>
       {fetchRoutinesError && <Text>Oops, something went wrong</Text>}
       <ScrollView>
         {routinesByType.map((routine: any) => (
           <View key={routine.id} style={styles.routineContainer}>
             <View style={styles.routineContainerTop}>
+              <Text style={styles.userName}>{routine.user_id.username}:</Text>
               <Text style={styles.routineName}>{routine.routine_name}</Text>
               <Text style={styles.createdAt}>{routine.created_at}</Text>
             </View>
@@ -154,6 +235,8 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
                   <Text style={styles.productName}>{product.productName}</Text>
                 </View>
               ))}
+              {routine.description && 
+                <Text>{routine.description}</Text>}
               <TouchableOpacity
                 style={styles.likeButton}
                 onPress={() => handlePostLike(routine.id)}
@@ -184,6 +267,12 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
+  navButton: {
+    display: "flex",
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "center"
+  },
   container: {
     flex: 1,
     backgroundColor: "white",
@@ -196,6 +285,11 @@ const styles = StyleSheet.create({
     margin: 10,
     fontFamily: "Lato-Bold",
     fontSize: 18,
+  },
+  userName: {
+    fontFamily: "PlayfairDisplay-Bold",
+    fontSize: 20,
+    marginLeft: 6,
   },
   routineProduct: {
     backgroundColor: "#EEE3CB",
@@ -247,6 +341,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     padding: 10,
     marginBottom: 30,
+    margin: 5,
   },
   backText: {
     textAlign: "center",
@@ -254,14 +349,16 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   routineContainerTop: {
-    height: 50,
+    height: 70,
     borderColor: "rgba(1,90,131,255)",
     borderTopWidth: 3,
     borderLeftWidth: 3,
     borderRightWidth: 3,
     backgroundColor: "#B7C4CF",
-    justifyContent: "space-between",
+    alignItems: "center",
+    // justifyContent: "center",
     flexDirection: "row",
+    flexWrap: "wrap"
   },
   routineContainerBottom: {
     backgroundColor: "white",
@@ -284,6 +381,72 @@ const styles = StyleSheet.create({
     fontFamily: "PlayfairDisplay-Bold",
     fontSize: 15,
   },
+  modalView: {
+    backgroundColor: "white",
+    height: "60%",
+    marginTop: "auto",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  filter: {
+    height: 80,
+  },
+  filterTag: {
+    height: 120,
+    marginLeft: 15,
+    marginBottom: 30,
+    // borderWidth: 1,
+  },
+  category: {
+    height: "100%",
+    margin: 10,
+    marginLeft: 0,
+    padding: 4,
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+    // borderWidth: 1,
+  },
+  categoryTag: {
+    margin: 5,
+    width: 120,
+    padding: 5,
+    borderRadius: 30,
+    backgroundColor: "#B7C4CF",
+    height: 35,
+  },
+  categoryText: {
+    textAlign: "center",
+    fontFamily: "Lato-Bold",
+    fontSize: 17,
+  },
+  categoryTitle: {
+    fontFamily: "Lato-Bold",
+    fontSize: 22,
+    padding: 6,
+  },
+  titleFilter: {
+    fontFamily: "PlayfairDisplay-Bold",
+    color: "white",
+    letterSpacing: 1,
+    backgroundColor: "rgba(1,90,131,255)",
+    fontSize: 27,
+    padding: 15,
+    marginBottom: 10,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  backButtonFilter: {
+    backgroundColor: "#EEE3CB",
+    borderRadius: 30,
+    width: 120,
+    height: 50,
+    alignSelf: "center",
+    padding: 10,
+    marginTop: -20,
+    justifyContent: "center",
+  }
 });
 
 export default SkincareTypeScreen;
