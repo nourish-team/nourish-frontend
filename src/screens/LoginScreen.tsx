@@ -12,6 +12,7 @@ import { ParamListBase, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import UserContext from "../contexts/UserContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const auth = getAuth();
 
@@ -56,7 +57,10 @@ const LoginScreen: React.FC = () => {
 
         if (response.ok) {
           const { id, username } = await response.json();
-          console.log("USERNAME ", username);
+
+          await AsyncStorage.setItem("userId", JSON.stringify(id));
+          await AsyncStorage.setItem("username", username);
+
           setUserId(id);
           setUserName(username);
           alert("Login successful!");
@@ -67,7 +71,6 @@ const LoginScreen: React.FC = () => {
         setError(true);
       }
     } catch (error) {
-      // console.error(error);
       setError(true);
     }
   };

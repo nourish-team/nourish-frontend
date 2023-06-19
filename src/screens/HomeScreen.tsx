@@ -62,7 +62,7 @@ interface Location {
 }
 
 const HomeScreen: React.FC = () => {
-  const { userId, userName } = useContext(UserContext);
+  const { setUserId, setUserName, userId, userName } = useContext(UserContext);
   const skincareTypes = [
     "acne",
     "dry",
@@ -78,6 +78,7 @@ const HomeScreen: React.FC = () => {
 
   useEffect(() => {
     getLocation();
+    fetchUserData();
   }, []);
 
   useEffect(() => {
@@ -85,6 +86,21 @@ const HomeScreen: React.FC = () => {
       fetchWeatherData();
     }
   }, [location]);
+
+  const fetchUserData = async () => {
+    try {
+      const storedUserId = await AsyncStorage.getItem("userId");
+      if (storedUserId) {
+        const userId = JSON.parse(storedUserId);
+        setUserId(userId);
+      }
+      const storedUserName = await AsyncStorage.getItem("username");
+      setUserId(storedUserId);
+      setUserName(storedUserName);
+    } catch (error) {
+      console.error("Error occurred while fetching user data: ", error);
+    }
+  };
 
   const getLocation = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
