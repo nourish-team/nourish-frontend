@@ -58,8 +58,8 @@ const LoginScreen: React.FC = () => {
         if (response.ok) {
           const { id, username } = await response.json();
 
-          await AsyncStorage.setItem("userId", JSON.stringify(id));
-          await AsyncStorage.setItem("username", username);
+          // await AsyncStorage.setItem("userId", JSON.stringify(id));
+          // await AsyncStorage.setItem("username", username);
 
           setUserId(id);
           setUserName(username);
