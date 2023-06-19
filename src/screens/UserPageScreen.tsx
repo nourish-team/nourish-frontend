@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
+  Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../navigation/types";
@@ -32,16 +33,59 @@ const UserPageScreen: React.FC = () => {
   const [fetchRoutinesError, setFetchRoutinesError] = useState(false);
   const { userId } = useContext(UserContext);
   const navigation = useNavigation<UserPageScreenNavigationProp>();
+  const [deleteError, setDeleteError] = useState(false);
 
   useEffect(() => {
     fetchRoutines();
-  }, []);
+  }, [userRoutines]);
 
   useFocusEffect(
     useCallback(() => {
       fetchRoutines();
     }, [])
   );
+
+  const handleDeleteRoutine = async (routineId: number) => {
+    Alert.alert(
+      "Delete Routine",
+      "Are you sure you want to delete this routine?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: async () => {
+            try {
+              const response = await fetch(
+                `http://10.0.2.2:8080/routine/delete/${routineId}`,
+                {
+                  method: "DELETE",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({ userId: routineId }),
+                }
+              );
+              if (response.ok) {
+                setDeleteError(false);
+                alert("Routine successfully deleted.");
+              } else {
+                setDeleteError(true);
+                alert("There was a problem deleting the routine.");
+              }
+            } catch (error) {
+              setDeleteError(true);
+              console.error("There was an error: ", error);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
 
   const fetchRoutines = async () => {
     try {
@@ -119,7 +163,14 @@ const UserPageScreen: React.FC = () => {
             }
           >
             <View style={styles.cardContainer}>
-              <Text style={styles.cardTitle}>{routine.routine_name}</Text>
+              <View style={styles.cardContainerTop}>
+                <Text style={styles.cardTitle}>{routine.routine_name}</Text>
+                <TouchableOpacity
+                  onPress={() => handleDeleteRoutine(routine.id)}
+                >
+                  <Text>✖︎</Text>
+                </TouchableOpacity>
+              </View>
               <Text style={styles.stepText}>
                 {routine.routine_product.length}{" "}
                 {routine.routine_product.length > 1 ? (
@@ -201,6 +252,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     paddingLeft: 15,
     paddingRight: 15,
+  },
+  cardContainerTop: {
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   stepText: {
     fontFamily: "Lato-Bold",
