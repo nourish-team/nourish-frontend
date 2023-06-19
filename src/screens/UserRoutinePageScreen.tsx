@@ -7,6 +7,9 @@ import {
   ImageBackground,
   ScrollView,
   Image,
+  Modal,
+  TextInput,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -32,11 +35,17 @@ type Props = {
 };
 
 const UserRoutinePageScreen: React.FC<Props> = ({ route, navigation }) => {
-  const { routineId, routineName, routineProduct } = route.params;
+  const { routineId, routineName, routineProduct, routineDescription } =
+    route.params;
   const [products, setProducts] = useState<
     { productName: string; productBrand: string; productId: number }[]
   >([]);
   const [loading, setLoading] = useState(true);
+  const [descriptionModalVisible, setDescriptionModalVisible] = useState(false);
+  const [newDescription, setNewDescription] = useState(routineDescription);
+  const [description, setDescription] = useState<string | null>(
+    routineDescription
+  );
 
   const handleBackPress = () => {
     navigation.navigate("HomeScreen");
@@ -47,7 +56,7 @@ const UserRoutinePageScreen: React.FC<Props> = ({ route, navigation }) => {
   };
 
   const handleJournalHistoryPress = () => {
-    navigation.navigate("JournalHistoryScreen", { routineId });
+    navigation.navigate("JournalHistoryScreen", { routineId, routineName });
   };
 
   const handleAddProduct = () => {
@@ -115,12 +124,89 @@ const UserRoutinePageScreen: React.FC<Props> = ({ route, navigation }) => {
     }
   }, [routineProduct]);
 
+  const toggleDescriptionModal = () => {
+    setDescriptionModalVisible(!descriptionModalVisible);
+  };
+
+  const handleUpdateDescription = async () => {
+    const routineData = {
+      id: routineId,
+      description: newDescription,
+    };
+
+    try {
+      const response = await fetch(
+        `http://10.0.2.2:8080/routine/update/description`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(routineData),
+        }
+      );
+      const data = response.json();
+
+      if (response.ok) {
+        alert("Description updated.");
+        toggleDescriptionModal();
+        setDescription(newDescription);
+      } else {
+        alert("Oops, something went wrong! Please try again.");
+      }
+    } catch (error) {
+      alert("Error.");
+    }
+  };
+
   useEffect(() => {
     fetchAndDisplayProducts();
-  }, [routineProduct]);
+    console.log("ROUTINE DESC: ", routineDescription);
+  }, [routineProduct, description]);
 
   return (
     <View style={styles.container}>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={descriptionModalVisible}
+        onRequestClose={() => {
+          toggleDescriptionModal();
+        }}
+      >
+        <TouchableOpacity
+          style={styles.centeredView}
+          activeOpacity={1}
+          onPressOut={toggleDescriptionModal}
+        >
+          <TouchableWithoutFeedback>
+            <View style={styles.modalView}>
+              <Text style={styles.modalTitle}>Edit Description</Text>
+              <TextInput
+                style={styles.input}
+                onChangeText={setNewDescription}
+                defaultValue={newDescription || ""}
+                multiline
+              />
+              <View style={styles.descriptionButtonContainer}>
+                <TouchableOpacity
+                  style={styles.saveDescriptionButton}
+                  onPress={handleUpdateDescription}
+                >
+                  <Text style={styles.modalSaveTextStyle}>Save</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.cancelDescriptionButton}
+                  onPress={toggleDescriptionModal}
+                >
+                  <Text style={styles.modalCancelTextStyle}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        </TouchableOpacity>
+      </Modal>
+
       <View style={styles.titleContainer}>
         <TouchableOpacity onPress={handleBackPress}>
           <AntDesign name="doubleleft" size={20} color="rgba(1,90,131,255)" />
@@ -141,7 +227,21 @@ const UserRoutinePageScreen: React.FC<Props> = ({ route, navigation }) => {
                 ⊹⊹⊹
               </Text>
             </View>
-            <View style={styles.descriptionContainerBottom}></View>
+            <View style={styles.descriptionContainerBottom}>
+              <TouchableOpacity
+                style={styles.editDescriptionButton}
+                onPress={toggleDescriptionModal}
+              >
+                <Text style={styles.editDescriptionButtonText}>edit</Text>
+              </TouchableOpacity>
+              {description ? (
+                <Text style={styles.descriptionText}>{description}</Text>
+              ) : (
+                <Text style={styles.descriptionText}>
+                  i'm just a little description box
+                </Text>
+              )}
+            </View>
           </View>
           <Text style={styles.separator}>⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹</Text>
           <View style={styles.textBubbleContainer}>
@@ -280,7 +380,7 @@ const styles = StyleSheet.create({
   },
   descriptionContainerBottom: {
     backgroundColor: "white",
-    padding: 40,
+    padding: 20,
     borderColor: "rgba(1,90,131,255)",
     borderWidth: 3,
   },
@@ -389,6 +489,97 @@ const styles = StyleSheet.create({
   },
   textBubbleText: {
     fontSize: 16,
+  },
+  descriptionText: {
+    fontFamily: "Lato-BoldItalic",
+    color: "gray",
+  },
+  editDescriptionButton: {
+    alignSelf: "flex-end",
+  },
+  editDescriptionButtonText: {
+    textDecorationLine: "underline",
+    marginTop: -10,
+    marginBottom: 15,
+    color: "rgba(1, 90, 131, 255)",
+    fontFamily: "Lato-Bold",
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalTitle: {
+    marginBottom: 15,
+    textAlign: "center",
+    fontSize: 25,
+    fontFamily: "Lato-Bold",
+  },
+  input: {
+    height: 150,
+    width: 250,
+    marginBottom: 10,
+    padding: 10,
+    borderColor: "gray",
+    borderWidth: 1,
+    borderRadius: 10,
+    textAlignVertical: "top",
+  },
+  modalButtonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  modalButton: {
+    backgroundColor: "#2196F3",
+    padding: 10,
+    borderRadius: 20,
+  },
+  modalSaveTextStyle: {
+    color: "black",
+    textAlign: "center",
+    fontFamily: "Lato-Bold",
+    fontSize: 15,
+  },
+  modalCancelTextStyle: {
+    color: "white",
+    textAlign: "center",
+    fontFamily: "Lato-Bold",
+    fontSize: 15,
+  },
+  saveDescriptionButton: {
+    backgroundColor: "#EEE3CB",
+    borderColor: "transparent",
+    borderWidth: 2,
+    borderRadius: 30,
+    padding: 15,
+  },
+  cancelDescriptionButton: {
+    backgroundColor: "rgba(1, 90, 131, 255)",
+    borderColor: "transparent",
+    borderWidth: 2,
+    borderRadius: 30,
+    padding: 15,
+  },
+  descriptionButtonContainer: {
+    flexDirection: "row",
+    gap: 15,
   },
 });
 
