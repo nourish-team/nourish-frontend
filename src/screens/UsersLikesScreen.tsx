@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import UserContext from "../contexts/UserContext";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 type RoutineItem = {
   users_id: number;
@@ -26,10 +27,12 @@ const UsersLikesScreen: React.FC = () => {
   const { userId } = useContext(UserContext);
   const [routines, setRoutines] = useState<any[]>([]);
   const [showDescription, setShowDescription] = useState<any[]>([]);
+  const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
+    setRefresh(true);
     handleFetchLikesHistory();
-  }, []);
+  }, [refresh]);
 
   const handleFetchProductNames = async (itemId: number) => {
     const response = await fetch(`http://10.0.2.2:8080/product/id/${itemId}`);
@@ -38,7 +41,6 @@ const UsersLikesScreen: React.FC = () => {
   };
 
   const handleFetchLikesHistory = async () => {
-    console.log("USER ID ", userId);
     try {
       const response = await fetch(`http://10.0.2.2:8080/like/user/${userId}`);
       const fetchdata = await response.json();
@@ -77,6 +79,27 @@ const UsersLikesScreen: React.FC = () => {
         return [...prev, index];
       }
     });
+  };
+
+  const handleDeleteLike = async (userId: number, routineId: number) => {
+    try {
+      const response = await fetch(
+        `http://10.0.2.2:8080/like/unlike/?userid=${userId}&routineid=${routineId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (response.ok) {
+        setRoutines((prevRoutines) =>
+          prevRoutines.filter((item) => item.routine_id.id !== routineId)
+        );
+      } else {
+        alert("Oops, something went wrong.");
+      }
+    } catch (error) {
+      alert("Oops, please try again.");
+    }
   };
 
   return (
@@ -147,6 +170,14 @@ const UsersLikesScreen: React.FC = () => {
                       ) : null}
                     </View>
                   </View>
+                  <TouchableOpacity
+                    style={styles.heart}
+                    onPress={() =>
+                      handleDeleteLike(routine.users_id, routine.routine_id.id)
+                    }
+                  >
+                    <Icon name="heart" size={25} color="#FFD1DC" />
+                  </TouchableOpacity>
                 </View>
               </View>
             ))}
@@ -291,6 +322,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#F0F8EA",
     marginTop: 10,
     padding: 5,
+  },
+  heart: {
+    alignSelf: "flex-end",
+    marginTop: 10,
   },
 });
 export default UsersLikesScreen;
