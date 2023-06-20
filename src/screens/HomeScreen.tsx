@@ -102,6 +102,7 @@ const HomeScreen: React.FC = () => {
   // };
 
   const getLocation = async () => {
+    console.log("getting location...");
     const { status } = await Location.requestForegroundPermissionsAsync();
 
     if (status !== "granted") {
@@ -109,17 +110,20 @@ const HomeScreen: React.FC = () => {
       return;
     }
 
-    const location = await Location.getCurrentPositionAsync({});
+    const userLocation = await Location.getLastKnownPositionAsync({});
 
-    if (location) {
-      const { latitude, longitude } = location.coords;
+    if (userLocation) {
+      const { latitude, longitude } = userLocation.coords;
       setLocation(`${latitude}, ${longitude}`);
+      console.log(location);
     } else {
       setLocation("unavailable");
+      console.log(location);
     }
   };
 
   const fetchWeatherData = async () => {
+    console.log("fetching weather data...");
     const currentDate = new Date();
     const cacheExpirationDate = new Date(
       currentDate.getFullYear(),
@@ -130,7 +134,8 @@ const HomeScreen: React.FC = () => {
       0
     );
     const currentDateTime = currentDate.getTime();
-    const cacheExpirationDateTime = cacheExpirationDate.getTime();
+    const cacheExpirationDateTime =
+      cacheExpirationDate.getTime() + 24 * 60 * 60 * 1000; // add 24 hours
 
     try {
       let data;
@@ -149,11 +154,26 @@ const HomeScreen: React.FC = () => {
 
         // Store the weather data in AsyncStorage
         await AsyncStorage.setItem("weatherData", JSON.stringify(data));
+
+        // Update the cache expiration time for the next day
+        const nextCacheExpirationDate = new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          currentDate.getDate() + 1, // Increment the day by 1
+          0,
+          0,
+          0
+        );
+        await AsyncStorage.setItem(
+          "cacheExpirationTime",
+          nextCacheExpirationDate.getTime().toString()
+        );
       } else {
         // Retrieve weather data from AsyncStorage
         const storedData = await AsyncStorage.getItem("weatherData");
         if (storedData) {
           data = JSON.parse(storedData);
+          console.log(data);
         }
       }
 
@@ -166,8 +186,6 @@ const HomeScreen: React.FC = () => {
   const handleSkincareTypePress = (skincareType: string) => {
     navigation.navigate("SkincareType", { skincareType });
   };
-
-  console.log(weatherData);
 
   const hour =
     parseInt(
