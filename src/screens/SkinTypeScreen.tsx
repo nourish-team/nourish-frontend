@@ -33,15 +33,8 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
   }, []);
 
   // useEffect(() => {
-  //     setLike(routinesByType.map(routine => {
-  //       let properties = {
-  //         like: routine.liked,
-  //         routineId: routine.id
-  //       }
-  //       return properties;
-  //     }));
-      
-  // }, []);
+  //   console.log("render", routinesByType)
+  // }, [routinesByType]);
  
 
   const fetchRoutinesByType = async () => {
@@ -92,7 +85,7 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
     }
   };
 
-  const handleDeleteLike = async (userId: number, routineId: number) => {
+  const handleDeleteLike = async (routineId: number) => {
     try {
       const response = await fetch(
         `http://10.0.2.2:8080/like/unlike/?userid=${userId}&routineid=${routineId}`,
@@ -112,7 +105,7 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
                 : 1;
               return {
                 ...routine,
-                liked: true,
+                liked: false,
                 _count: {
                   ...routine._count,
                   likes: newLikesCount,
@@ -128,26 +121,14 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
     }
   };
 
-  const handlePostLike = async (routineId: number, liked: boolean) => {
+  const handlePostLike = async (routineId: number) => {
+    console.log("routine id in post:", routineId);
     const postReq = {
       users_id: userId,
       routines_id: routineId,
       like: true,
     };
 
-    
-   routinesByType.map(obj => {
-      if (obj.id === routineId) {
-        obj.liked = !obj.liked;
-      }
-    });
-
-
-    if (liked) {
-      handleDeleteLike(userId, routineId);
-      return;
-    };
-   
 
     try {
       const response = await fetch(`http://10.0.2.2:8080/like/routine`, {
@@ -183,8 +164,17 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
         console.error("Failed to post like:", response.status);
       }
     } catch (error) {
+      console.log(error);
       alert("You've already liked this");
     }
+  };
+
+  const handleClickLike = (routineId: number, liked: boolean) => {
+    if(liked) {
+      handleDeleteLike(routineId);
+    } else {
+      handlePostLike(routineId);
+    };
   };
 
   const handleModal = () => {
@@ -296,7 +286,7 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
                 <Text>{routine.description}</Text>}
               <TouchableOpacity
                 style={styles.likeButton}
-                onPress={() => handlePostLike(routine.id, routine.liked)}
+                onPress={() => handleClickLike(routine.id, routine.liked)}
               >
                 {routine.liked ? (
                   <Icon name="heart" size={20} color="#FFD1DC" />
