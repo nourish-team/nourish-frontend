@@ -77,7 +77,7 @@ const JournalHistoryScreen: React.FC<Props> = ({ route, navigation }) => {
     const getHistory = async () => {
       try {
         const response = await fetch(
-          `http://10.0.2.2:8080/journal/routine/user/?userid=${userId}&routineid=${routineId}`
+          `https://nourishskin.herokuapp.com/journal/routine/user/?userid=${userId}&routineid=${routineId}`
         );
         const commentData = await response.json();
         setJournalEntries(commentData);

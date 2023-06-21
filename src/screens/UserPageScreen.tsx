@@ -60,7 +60,7 @@ const UserPageScreen: React.FC = () => {
           onPress: async () => {
             try {
               const response = await fetch(
-                `http://10.0.2.2:8080/routine/delete/${routineId}`,
+                `https://nourishskin.herokuapp.com/routine/delete/${routineId}`,
                 {
                   method: "DELETE",
                   headers: {
@@ -91,7 +91,7 @@ const UserPageScreen: React.FC = () => {
     try {
       const userIdToString = String(userId);
       const response = await fetch(
-        `http://10.0.2.2:8080/routine/user/${userIdToString}`
+        `https://nourishskin.herokuapp.com/routine/user/${userIdToString}`
       );
       const data = await response.json();
       // console.log("LONG DATA ", data.productsOfRoutines);

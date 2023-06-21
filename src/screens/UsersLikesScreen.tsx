@@ -35,14 +35,14 @@ const UsersLikesScreen: React.FC = () => {
   }, [refresh]);
 
   const handleFetchProductNames = async (itemId: number) => {
-    const response = await fetch(`http://10.0.2.2:8080/product/id/${itemId}`);
+    const response = await fetch(`https://nourishskin.herokuapp.com/product/id/${itemId}`);
     const data = await response.json();
     return { product: data.product_name, brand: data.brand };
   };
 
   const handleFetchLikesHistory = async () => {
     try {
-      const response = await fetch(`http://10.0.2.2:8080/like/user/${userId}`);
+      const response = await fetch(`https://nourishskin.herokuapp.com/like/user/${userId}`);
       const fetchdata = await response.json();
 
       const routinesWithNames = await Promise.all(
@@ -84,7 +84,7 @@ const UsersLikesScreen: React.FC = () => {
   const handleDeleteLike = async (userId: number, routineId: number) => {
     try {
       const response = await fetch(
-        `http://10.0.2.2:8080/like/unlike/?userid=${userId}&routineid=${routineId}`,
+        `https://nourishskin.herokuapp.com/like/unlike/?userid=${userId}&routineid=${routineId}`,
         {
           method: "DELETE",
         }
@@ -143,8 +143,8 @@ const UsersLikesScreen: React.FC = () => {
                     {routine.routine_id.routine_product &&
                       routine.routine_id.routine_product.length > 0 &&
                       routine.routine_id.routine_product.map(
-                        (product: { product: string; brand: string }) => (
-                          <View style={styles.productContainer}>
+                        (product: { product: string; brand: string }, index: number) => (
+                          <View key={index} style={styles.productContainer}>
                             <Text style={styles.brandName}>
                               {product.brand}
                             </Text>
@@ -270,7 +270,6 @@ const styles = StyleSheet.create({
     color: "grey",
   },
   skinTypeText: {
-    color: "",
     textAlign: "right",
     fontFamily: "Lato-Bold",
     fontSize: 15,

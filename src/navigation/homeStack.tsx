@@ -16,6 +16,7 @@ import UsersLikesScreen from "../screens/UsersLikesScreen";
 import UserAccountScreen from "../screens/UserAccountScreen";
 import TabIcon from "../components/TabIcon";
 import WeatherTypeScreen from "../screens/WeatherTypeScreen";
+import TopTenLikesScreen from "../screens/TopTenLikesScreen";
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 const Stack = createStackNavigator<RootStackParamList>();
@@ -125,6 +126,7 @@ const HomeStack: React.FC = () => (
       component={SearchToAddNewScreen}
     />
     <Stack.Screen name="WeatherType" component={WeatherTypeScreen} />
+    <Stack.Screen name="TopTen" component={TopTenLikesScreen}/>
   </Stack.Navigator>
 );
 

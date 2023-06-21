@@ -33,12 +33,12 @@ const WeatherTypeScreen: React.FC<{ route: any }> = ({ route }) => {
     const encodedWeatherType = encodeURIComponent(weatherType);
     try {
       const response = await fetch(
-        `http://10.0.2.2:8080/routine/weather/${encodedWeatherType}`
+        `https://nourishskin.herokuapp.com/routine/weather/${encodedWeatherType}`
       );
       const data = await response.json();
 
       const likedResponse = await fetch(
-        `http://10.0.2.2:8080/like/user/${userId}`
+        `https://nourishskin.herokuapp.com/like/user/${userId}`
       );
       const likedData = await likedResponse.json();
       const likedRoutineIds = likedData.map((like: any) => like.routine_id.id);
@@ -47,7 +47,7 @@ const WeatherTypeScreen: React.FC<{ route: any }> = ({ route }) => {
 
       for (const routine of data) {
         const productPromises = routine.routine_product.map((productId: any) =>
-          fetch(`http://10.0.2.2:8080/product/id/${productId}`)
+          fetch(`https://nourishskin.herokuapp.com/product/id/${productId}`)
         );
 
         const productResponses = await Promise.all(productPromises);
@@ -81,7 +81,7 @@ const WeatherTypeScreen: React.FC<{ route: any }> = ({ route }) => {
   const handleDeleteLike = async (routineId: number) => {
     try {
       const response = await fetch(
-        `http://10.0.2.2:8080/like/unlike/?userid=${userId}&routineid=${routineId}`,
+        `https://nourishskin.herokuapp.com/like/unlike/?userid=${userId}&routineid=${routineId}`,
         {
           method: "DELETE",
         }
@@ -124,7 +124,7 @@ const WeatherTypeScreen: React.FC<{ route: any }> = ({ route }) => {
 
 
     try {
-      const response = await fetch(`http://10.0.2.2:8080/like/routine`, {
+      const response = await fetch(`https://nourishskin.herokuapp.com/like/routine`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

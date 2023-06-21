@@ -69,7 +69,7 @@ const AddJournalScreen: React.FC<Props> = ({ route, navigation }) => {
     };
 
     try {
-      const response = await fetch("http://10.0.2.2:8080/journal/routine", {
+      const response = await fetch("https://nourishskin.herokuapp.com/journal/routine", {
         method: "POST",
         body: JSON.stringify(journalData),
         headers: {

@@ -56,7 +56,7 @@ const SearchToAddNewScreen: React.FC<Props> = ({ route, navigation }) => {
       const acceptDifferences = brand.toLowerCase();
       const encodedBrand = encodeURIComponent(acceptDifferences);
       const response = await fetch(
-        `http://10.0.2.2:8080/product/${encodedBrand}`
+        `https://nourishskin.herokuapp.com/product/${encodedBrand}`
       );
       if (response.ok) {
         const data = await response.json();

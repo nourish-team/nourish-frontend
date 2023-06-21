@@ -45,7 +45,7 @@ const LoginScreen: React.FC = () => {
       const user = userCredentials.user;
 
       if (user !== null) {
-        const response = await fetch("http://10.0.2.2:8080/login/user", {
+        const response = await fetch("https://nourishskin.herokuapp.com/login/user", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

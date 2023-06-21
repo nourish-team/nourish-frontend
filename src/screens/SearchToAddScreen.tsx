@@ -58,7 +58,7 @@ const SearchToAddScreen: React.FC<Props> = ({ route, navigation }) => {
       const acceptDifferences = brand.toLowerCase();
       const encodedBrand = encodeURIComponent(acceptDifferences);
       const response = await fetch(
-        `http://10.0.2.2:8080/product/${encodedBrand}`
+        `https://nourishskin.herokuapp.com/product/${encodedBrand}`
       );
       if (response.ok) {
         const data = await response.json();
@@ -89,7 +89,7 @@ const SearchToAddScreen: React.FC<Props> = ({ route, navigation }) => {
     };
     console.log("ROUTINE DATA ", routineData);
     try {
-      const response = await fetch(`http://10.0.2.2:8080/routine/update`, {
+      const response = await fetch(`https://nourishskin.herokuapp.com/routine/update`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
