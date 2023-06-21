@@ -22,6 +22,7 @@ export type RootStackParamList = {
     selectedItems: (number | { itemId: number; itemName: string })[];
   };
   SearchToAddNewScreen: undefined;
+  WeatherType: { weatherType: string };
 };
 
 export type MainTabParamList = {
