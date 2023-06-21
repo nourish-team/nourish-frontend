@@ -115,7 +115,7 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
     };
 
     try {
-      const response = await fetch("http://10.0.2.2:8080/routine/create", {
+      const response = await fetch("https://nourishskin.herokuapp.com/routine/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

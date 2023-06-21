@@ -23,6 +23,7 @@ export type RootStackParamList = {
   };
   SearchToAddNewScreen: undefined;
   WeatherType: { weatherType: string };
+  TopTen: undefined;
 };
 
 export type MainTabParamList = {

@@ -44,7 +44,7 @@ const SignupScreen: React.FC = () => {
       );
       const user = userCredentials.user;
 
-      const response = await fetch("http://10.0.2.2:8080/signup", {
+      const response = await fetch("https://nourishskin.herokuapp.com/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

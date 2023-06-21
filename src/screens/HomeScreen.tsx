@@ -197,6 +197,10 @@ const HomeScreen: React.FC = () => {
     navigation.navigate("WeatherType", { weatherType });
   };
 
+  const handleTopTenPress = () => {
+    navigation.navigate("TopTen");
+  }
+
   const hour =
     parseInt(
       weatherData?.location?.localtime?.split(" ")[1]?.split(":")[0] ?? "",
@@ -257,6 +261,9 @@ const HomeScreen: React.FC = () => {
             )}
           </ImageBackground>
         </View>
+        <TouchableOpacity onPress={handleTopTenPress} style={styles.topTenContainer}>
+          <Text style={styles.topTenFont}>Top 10 Liked Routines</Text>
+        </TouchableOpacity>
         {/* <Image
           source={require("../../assets/images/squiggly-line.png")}
           style={styles.squigglyLine}
@@ -440,7 +447,7 @@ const styles = StyleSheet.create({
     borderColor: "#B7C4CF",
     borderWidth: 5,
     marginTop: 10,
-    marginBottom: 120,
+    marginBottom: 30,
     resizeMode: "cover",
     justifyContent: "center",
     alignItems: "center",
@@ -492,6 +499,16 @@ const styles = StyleSheet.create({
     textAlign: "center",
     margin: 20,
   },
+  topTenContainer: {
+    width: "100%",
+    height: 100,
+    borderWidth: 2,
+    borderRadius: 10,
+    marginBottom: 30
+  },
+  topTenFont: {
+    textAlign: "center"
+  }
 });
 
 export default HomeScreen;

@@ -36,7 +36,7 @@ const TopTenLikesScreen: React.FC = () => {
   const fetchTopTen = async () => {
     try {
       // get routines
-      const result = await fetch("http://10.0.2.2:8080/routine/top10");
+      const result = await fetch("https://nourishskin.herokuapp.com/routine/top10");
       const routineList = await result.json();
       const routinesInfo: RoutineProps[] = [];
       // get names for products in each routine
@@ -44,7 +44,7 @@ const TopTenLikesScreen: React.FC = () => {
         const productNames = await Promise.all(
           routine.routine_product.map(
             async (product: number | string) =>
-              await fetch(`http://10.0.2.2:8080/product/id/${product}`).then(
+              await fetch(`https://nourishskin.herokuapp.com/product/id/${product}`).then(
                 async (res) => await res.json()
               )
           )

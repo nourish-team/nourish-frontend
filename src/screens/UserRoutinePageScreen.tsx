@@ -79,7 +79,7 @@ const UserRoutinePageScreen: React.FC<Props> = ({ route, navigation }) => {
       public: true,
     };
     try {
-      const response = await fetch(`http://10.0.2.2:8080/routine/update`, {
+      const response = await fetch(`https://nourishskin.herokuapp.com/routine/update`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -104,7 +104,7 @@ const UserRoutinePageScreen: React.FC<Props> = ({ route, navigation }) => {
 
     try {
       const fetchPromises = routineProduct.map(async (pid) => {
-        const response = await fetch(`http://10.0.2.2:8080/product/id/${pid}`);
+        const response = await fetch(`https://nourishskin.herokuapp.com/product/id/${pid}`);
         const data = await response.json();
         const newProduct = {
           productName: data.product_name,
@@ -136,7 +136,7 @@ const UserRoutinePageScreen: React.FC<Props> = ({ route, navigation }) => {
 
     try {
       const response = await fetch(
-        `http://10.0.2.2:8080/routine/update/description`,
+        `https://nourishskin.herokuapp.com/routine/update/description`,
         {
           method: "PATCH",
           headers: {
