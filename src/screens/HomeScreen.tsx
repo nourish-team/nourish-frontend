@@ -74,6 +74,12 @@ const HomeScreen: React.FC = () => {
   const [location, setLocation] = useState<string | null>(null);
   const [weatherData, setWeatherData] = useState<ApiResponse | null>(null);
 
+  const weatherTypes = [
+    "hot air",
+    "dry air",
+    "humid air",
+  ];
+
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
   useEffect(() => {
@@ -187,6 +193,10 @@ const HomeScreen: React.FC = () => {
     navigation.navigate("SkincareType", { skincareType });
   };
 
+  const handleWeatherTypePress = (weatherType: string) => {
+    navigation.navigate("WeatherType", { weatherType });
+  };
+
   const hour =
     parseInt(
       weatherData?.location?.localtime?.split(" ")[1]?.split(":")[0] ?? "",
@@ -263,6 +273,23 @@ const HomeScreen: React.FC = () => {
               key={index}
               style={[styles.card, index !== 0 && styles.cardMargin]}
               onPress={() => handleSkincareTypePress(type)}
+            >
+              <Text style={styles.cardText}>{type}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+        <Text style={styles.infoText}>browse by</Text>
+        <Text style={styles.infoText}>weather type</Text>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.cardContainer}
+        >
+          {weatherTypes.map((type, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[styles.card, index !== 0 && styles.cardMargin]}
+              onPress={() => handleWeatherTypePress(type)}
             >
               <Text style={styles.cardText}>{type}</Text>
             </TouchableOpacity>
