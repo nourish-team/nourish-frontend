@@ -410,12 +410,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    padding: 4,
+    padding: 10,
     paddingBottom: 0,
-    marginBottom: 25,
+    marginBottom: 38,
   },
   titleText: {
-    fontSize: 30,
+    fontSize: 20,
     fontFamily: "Lato-Bold",
     color: "white",
     letterSpacing: 1.5,
@@ -465,13 +465,13 @@ const styles = StyleSheet.create({
   brandName: {
     color: "black",
     fontFamily: "PlayfairDisplay-Bold",
-    fontSize: 19,
+    fontSize: 16,
   },
   productName: {
     color: "rgba(1, 90, 131, 255)",
     fontFamily: "Lato-Bold",
     marginBottom: 5,
-    fontSize: 19,
+    fontSize: 16,
   },
   likesText: {
     fontFamily: "PlayfairDisplay-Bold",
