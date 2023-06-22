@@ -192,27 +192,31 @@ const WeatherTypeScreen: React.FC<{ route: any }> = ({ route }) => {
         {routinesByType.map((routine: any) => (
           <View key={routine.id} style={styles.routineContainer}>
             <View style={styles.routineContainerTop}>
-              <Text style={styles.userName}>{routine.user_id.username}:</Text>
+              <Text style={styles.userName}>{routine.user_id.username}</Text>
+              <Text style={styles.stars}>⊹</Text>
               <Text style={styles.routineName}>{routine.routine_name}</Text>
               <Text style={styles.createdAt}>{routine.created_at}</Text>
             </View>
             <View style={styles.routineContainerBottom}>
               {routine.products.map((product: any, index: number) => (
                 <View key={index} style={styles.routineProduct}>
-                  <Text style={styles.brandName}>{product.brand}</Text>
+                  <Text style={styles.brandName}>⊹ {product.brand}</Text>
                   <Text style={styles.productName}>{product.productName}</Text>
                 </View>
                 ))}
                 {routine.description && 
-                <Text>{routine.description}</Text>}
+                  <View style={styles.descriptionBox}>
+                    <Text style={styles.descriptionText}>{routine.description}</Text>
+                  </View>
+                }
               <TouchableOpacity
                 style={styles.likeButton}
                 onPress={() => handleClickLike(routine.id, routine.liked)}
               >
                 {routine.liked ? (
-                  <Icon name="heart" size={20} color="#FFD1DC" />
+                  <Icon name="heart" size={30} color="#015a83" />
                 ) : (
-                  <Icon name="heart-o" size={20} />
+                  <Icon name="heart-o" size={30} />
                 )}
                 <Text style={styles.likesText}>
                   {" "}
@@ -234,121 +238,158 @@ const WeatherTypeScreen: React.FC<{ route: any }> = ({ route }) => {
   );
 };
 
+
 const styles = StyleSheet.create({
-  navButton: {
-    display: "flex",
-    flexDirection: "row",
-    width: "100%",
-    justifyContent: "center"
-  },
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  routineContainer: {
-    marginHorizontal: 40,
-    marginBottom: 40,
-  },
-  routineName: {
-    margin: 10,
-    fontFamily: "Lato-Bold",
-    fontSize: 18,
-  },
-  userName: {
-    fontFamily: "PlayfairDisplay-Bold",
-    fontSize: 20,
-    marginLeft: 6,
-  },
-  routineProduct: {
-    backgroundColor: "#EEE3CB",
-    borderRadius: 10,
-    width: "100%",
-    padding: 10,
-    marginBottom: 5,
-  },
-  createdAt: {
-    margin: 10,
-    fontFamily: "Lato-Regular",
-  },
-  likeButton: {
-    marginTop: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-end",
-  },
-  imageContainer: {
-    position: "absolute",
-    top: 0,
-    height: Dimensions.get("window").height * 0.15,
-    width: Dimensions.get("window").width,
-  },
-  image: {
-    height: "100%",
-    width: "100%",
-  },
-  titleContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 10,
-    marginBottom: 25,
-  },
-  titleText: {
-    fontSize: 20,
-    fontFamily: "Lato-Bold",
-    color: "white",
-    letterSpacing: 1.5,
-    marginBottom: 30,
-    marginTop: Dimensions.get("window").height * 0.06,
-    textAlign: "center",
-  },
-  backButton: {
-    backgroundColor: "#EEE3CB",
-    borderRadius: 30,
-    width: 80,
-    alignSelf: "center",
-    padding: 10,
-    marginBottom: 30,
-    margin: 5,
-  },
-  backText: {
-    textAlign: "center",
-    fontFamily: "Lato-Bold",
-    fontSize: 15,
-  },
-  routineContainerTop: {
-    height: 70,
-    borderColor: "rgba(1,90,131,255)",
-    borderTopWidth: 3,
-    borderLeftWidth: 3,
-    borderRightWidth: 3,
-    backgroundColor: "#B7C4CF",
-    alignItems: "center",
-    // justifyContent: "center",
-    flexDirection: "row",
-    flexWrap: "wrap"
-  },
-  routineContainerBottom: {
-    backgroundColor: "white",
-    padding: 20,
-    borderColor: "rgba(1,90,131,255)",
-    borderWidth: 3,
-  },
-  brandName: {
-    color: "gray",
-    fontFamily: "PlayfairDisplay-Bold",
-    fontSize: 15,
-  },
-  productName: {
-    color: "rgba(1, 90, 131, 255)",
-    fontFamily: "Lato-Bold",
-    marginBottom: 5,
-    fontSize: 15,
-  },
-  likesText: {
-    fontFamily: "PlayfairDisplay-Bold",
-    fontSize: 15,
-  },
+    navButton: {
+      display: "flex",
+      flexDirection: "row",
+      width: "100%",
+      height: 60,
+      justifyContent: "center"
+    },
+    container: {
+      flex: 1,
+      backgroundColor: "white",
+    },
+    routineContainer: {
+      // width: "90%",
+      marginHorizontal: 20,
+      marginBottom: 40,
+    },
+    routineName: {
+      // margin: 10,
+      fontFamily: "Lato-BoldItalic",
+      fontSize: 25,
+    },
+    userName: {
+      fontFamily: "Lato-BoldItalic",
+      fontSize: 25,
+      marginLeft: 13,
+      padding: 6,
+      marginRight: 0,
+      paddingRight: 0,
+    },
+    routineProduct: {
+      backgroundColor: "#EEE3CB",
+      borderRadius: 10,
+      width: "100%",
+      padding: 10,
+      marginBottom: 5,
+    },
+    createdAt: {
+      margin: 10,
+      marginLeft: 13,
+      fontFamily: "Lato-Regular",
+      fontSize: 16,
+      paddingLeft: 6,
+    },
+    stars: {
+      fontSize: 24,
+      fontFamily: "Lato-Bold",
+      color: "rgba(1,90,131,255)",
+      padding: 10,
+    },
+    descriptionBox: {
+      width: "100%",
+      borderColor: "rgba(1,90,131,255)",
+      borderWidth: 3,
+      borderRadius: 10,
+      padding: 10,
+      marginBottom: 10,
+    },
+    descriptionText: {
+      fontFamily: "Lato-Regular",
+      fontSize: 17,
+      padding: 4,
+    },
+  
+    likeButton: {
+      marginTop: 10,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "flex-end",
+    },
+    imageContainer: {
+      position: "absolute",
+      top: 0,
+      height: Dimensions.get("window").height * 0.15,
+      width: Dimensions.get("window").width,
+    },
+    image: {
+      height: "100%",
+      width: "100%",
+    },
+    titleContainer: {
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 10,
+      paddingBottom: 0,
+      marginBottom: 38,
+    },
+    titleText: {
+      fontSize: 20,
+      fontFamily: "Lato-Bold",
+      color: "white",
+      letterSpacing: 1.5,
+      marginBottom: 30,
+      marginTop: Dimensions.get("window").height * 0.05,
+      textAlign: "center",
+    },
+    backButton: {
+      backgroundColor: "#EEE3CB",
+      borderRadius: 30,
+      width: 150,
+      height: 50,
+      alignSelf: "center",
+      padding: 10,
+      marginBottom: 30,
+      margin: 5,
+    },
+  
+    filterButton: {
+      borderWidth: 3,
+      borderColor: "rgba(1,90,131,255)",
+    },
+  
+    backText: {
+      textAlign: "center",
+      fontFamily: "Lato-Bold",
+      fontSize: 20,
+    },
+    routineContainerTop: {
+      height: 90,
+      borderColor: "rgba(1,90,131,255)",
+      borderTopWidth: 3,
+      borderLeftWidth: 3,
+      borderRightWidth: 3,
+      backgroundColor: "#EEE3CB",
+      alignItems: "center",
+      // justifyContent: "center",
+      flexDirection: "row",
+      flexWrap: "wrap"
+    },
+    routineContainerBottom: {
+      backgroundColor: "white",
+      padding: 20,
+      borderColor: "rgba(1,90,131,255)",
+      borderWidth: 3,
+    },
+    brandName: {
+      color: "black",
+      fontFamily: "PlayfairDisplay-Bold",
+      fontSize: 19,
+    },
+    productName: {
+      color: "rgba(1, 90, 131, 255)",
+      fontFamily: "Lato-Bold",
+      marginBottom: 5,
+      fontSize: 19,
+    },
+    likesText: {
+      fontFamily: "PlayfairDisplay-Bold",
+      fontSize: 15,
+    },
 });
 
 export default WeatherTypeScreen;
