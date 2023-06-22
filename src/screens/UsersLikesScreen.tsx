@@ -1,4 +1,5 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useCallback } from "react";
+import { useFocusEffect } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -29,10 +30,11 @@ const UsersLikesScreen: React.FC = () => {
   const [showDescription, setShowDescription] = useState<any[]>([]);
   const [refresh, setRefresh] = useState(false);
 
-  useEffect(() => {
-    setRefresh(true);
-    handleFetchLikesHistory();
-  }, [refresh]);
+  useFocusEffect(
+    useCallback(() => {
+      handleFetchLikesHistory();
+    }, [userId])
+  );
 
   const handleFetchProductNames = async (itemId: number) => {
     const response = await fetch(`https://nourishskin.herokuapp.com/product/id/${itemId}`);
@@ -176,7 +178,7 @@ const UsersLikesScreen: React.FC = () => {
                       handleDeleteLike(routine.users_id, routine.routine_id.id)
                     }
                   >
-                    <Icon name="heart" size={25} color="#FFD1DC" />
+                    <Icon name="heart" size={25} color="rgba(1,90,131,255)" />
                   </TouchableOpacity>
                 </View>
               </View>
@@ -226,16 +228,17 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   routineOuterContainer: {
-    width: 330,
-    borderWidth: 2,
-    borderColor: "transparent",
+    width: 340,
+    borderWidth: 3,
+    borderColor: "rgba(1,90,131,255)",
     borderRadius: 20,
-    backgroundColor: "#B7C4CF",
+    backgroundColor: "white",
     padding: 20,
   },
   routineInnerContainer: {
-    backgroundColor: "#EEE3CB",
-    padding: 10,
+    backgroundColor: "white",
+    borderColor: "rgba(1,90,131,255)",
+    borderWidth: 3
   },
   vLineContainer: {
     flexDirection: "row",
@@ -261,10 +264,12 @@ const styles = StyleSheet.create({
     bottom: -50,
   },
   routineNameText: {
-    backgroundColor: "white",
+    backgroundColor: "#EEE3CB",
     fontFamily: "PlayfairDisplay-Bold",
-    fontSize: 20,
-    letterSpacing: 1,
+    fontSize: 25,
+    padding: 10,
+    borderBottomWidth: 2,
+    borderColor: "rgba(1,90,131,255)",
   },
   backgroundText: {
     color: "grey",
@@ -273,30 +278,35 @@ const styles = StyleSheet.create({
     textAlign: "right",
     fontFamily: "Lato-Bold",
     fontSize: 15,
-    marginBottom: 5,
-    marginTop: 5,
+    padding: 10,
   },
   brandName: {
     fontFamily: "PlayfairDisplay-Bold",
     color: "#967E76",
     textDecorationLine: "underline",
+    fontSize: 16
   },
   productName: {
     fontFamily: "Lato-Bold",
     color: "#2D4654",
+    fontSize: 16
   },
   productContainer: {
     backgroundColor: "white",
-    alignSelf: "flex-start",
-    borderRadius: 40,
+    alignSelf: "center",
+    borderRadius: 10,
     padding: 15,
+    marginHorizontal: 10,
     marginBottom: 5,
+    borderWidth: 2,
+    borderColor: "rgba(1,90,131,255)",
+    width: 250
   },
   logo: {
     height: 170,
     width: 170,
     alignSelf: "center",
-    marginTop: -30,
+    marginTop: -20,
     marginBottom: -12,
   },
   separator: {
@@ -308,9 +318,12 @@ const styles = StyleSheet.create({
   descriptionToggleText: {
     margin: 5,
     fontFamily: "PlayfairDisplay-Bold",
+    color: "#F8ECD3",
+    fontSize: 17
   },
   description: {
     padding: 5,
+    margin: 10,
     fontFamily: "Lato-Bold",
     backgroundColor: "white",
   },
@@ -318,7 +331,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   descriptionContainer: {
-    backgroundColor: "#F0F8EA",
+    backgroundColor: "#B7C4CF",
     marginTop: 10,
     padding: 5,
   },
