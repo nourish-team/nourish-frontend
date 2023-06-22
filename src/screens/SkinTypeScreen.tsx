@@ -465,13 +465,13 @@ const styles = StyleSheet.create({
   brandName: {
     color: "black",
     fontFamily: "PlayfairDisplay-Bold",
-    fontSize: 19,
+    fontSize: 16,
   },
   productName: {
     color: "rgba(1, 90, 131, 255)",
     fontFamily: "Lato-Bold",
     marginBottom: 5,
-    fontSize: 19,
+    fontSize: 16,
   },
   likesText: {
     fontFamily: "PlayfairDisplay-Bold",
