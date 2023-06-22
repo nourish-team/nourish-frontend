@@ -6,8 +6,8 @@ import {
   StyleSheet,
   TextInput,
   Switch,
+  ScrollView
 } from "react-native";
-import { Picker } from "@react-native-picker/picker";
 import { RootStackParamList } from "../navigation/types";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RouteProp } from "@react-navigation/native";
@@ -146,90 +146,113 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.headerContainer}>
+        <TouchableOpacity style={styles.tabTop} >
+          <Text style={styles.tabText}>new routine</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+              style={styles.createRoutineButton}
+              onPress={handleCreateRoutine}
+              >
+              <Text style={styles.createRoutineButtonText}>Create</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+              style={styles.cancelButton}
+              onPress={handleCancelButtonPress}
+              >
+              <Text style={styles.cancelButtonText}>Cancel</Text>
+        </TouchableOpacity>
+      </View>
       {error ? (
         <Text>Oops, there was a problem making your routine</Text>
       ) : null}
-      <View style={styles.headButtonContainer}>
-        <TouchableOpacity
-          style={styles.createRoutineButton}
-          onPress={handleCreateRoutine}
-          >
-            <Text style={styles.createRoutineButtonText}>Create New{"\n"}Routine</Text>
-          </TouchableOpacity>
-          <View style={styles.buttonSpacer} />
-          <TouchableOpacity
-          style={styles.cancelButton}
-          onPress={handleCancelButtonPress}
-          >
-            <Text style={styles.cancelButtonText}>Cancel</Text>
-          </TouchableOpacity> 
-      </View>
-      <Text style={styles.separator}>⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹⊹</Text>
-      <View style={styles.newNameContainer}>
-        <View style={styles.nameContainer}>
-        <Text style={styles.titleNameText}>Name your{"\n"}new routine!</Text>
-        </View>
-        <TextInput
-        style={styles.searchBox}
-        value={routineName}
-        onChangeText={(input) => setRoutineName(input)}
-        />
-      </View>
-      <View style={styles.pickerContainer}>
-        <View style={styles.selectContainer}>
-          <Picker
-          selectedValue={selectedSkinType}
-          onValueChange={handleSkinTypeSelect}
-          style={styles.picker}
-          >
-            <Picker.Item
-            value={""}
-            label="Select skin type"
-            style={styles.pickerItemLabel}
-            />
-            {skinTypeOptions.map((option, index) => (
-            <Picker.Item key={index} label={option} value={option} />
-            ))}
-          </Picker>
-        </View>
-        <View style={styles.selectContainer}>
-          <Picker
-          selectedValue={weatherType}
-          onValueChange={handleWeatherTypeSelect}
-          style={styles.picker}
-          >
-            <Picker.Item 
-            value={""} 
-            label="Select weather type"
-            style={styles.pickerItemLabel}
-            />
-            {weatherTypeOptions.map((option, index) => (
-            <Picker.Item key={index} label={option} value={option} />
-            ))}
-          </Picker>
-        </View>
-      </View>
-      <TouchableOpacity
-        style={styles.createProductButton}
-        onPress={handleAddProductsPress}
-      >
-        <Text style={styles.createProductButtonText}>Add Products</Text>
-      </TouchableOpacity>
-      <View style={styles.descriptionContainerTop}>
-        <Text style={styles.descriptionTitleText}>Description</Text>
-        <View style={styles.publicToggle}>
-          <Text>Public:</Text>
-          <Switch value={isPublic} onValueChange={handlePublicToggle} />
-        </View>
-      </View>
-      <View style={styles.descriptionContainer}>
+      <ScrollView style={styles.contentContainer}>
+        <View style={styles.newNameContainer}>
+          <Text style={styles.titleNameText}>Name</Text>
           <TextInput
-          value={description}
-          onChangeText={setDescription}
-          placeholder="Enter description your routine"
-          multiline
+          style={styles.searchBox}
+          value={routineName}
+          onChangeText={(input) => setRoutineName(input)}
           />
-      </View>
+        </View>
+        <View style={styles.descriptionParentContainer}>
+          <View style={styles.descriptionContainerTop}>
+            <Text style={styles.descriptionTitleText}>Description</Text>
+            <View style={styles.publicToggle}>
+              <Text>Public:</Text>
+              <Switch value={isPublic} onValueChange={handlePublicToggle} />
+            </View>
+          </View>
+          <View style={styles.descriptionContainer}>
+              <TextInput
+              value={description}
+              onChangeText={setDescription}
+              placeholder="Describe your routine here..."
+              multiline
+              />
+          </View>
+        </View>
+        <View style={styles.selectContainer}>
+            <View style={styles.selectContainerLeft}>
+              <Text style={styles.titleNameText}>Skin Type</Text>
+            </View>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {skinTypeOptions.map((option, index) => (
+                <TouchableOpacity
+                  style={[
+                    styles.optionButton,
+                    selectedSkinType === option && styles.selectedOption
+                  ]}
+                  key={index}
+                  onPress={() => handleSkinTypeSelect(option)}
+                >
+                  <Text style={styles.optionText}>{option}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+          <View style={styles.selectContainer}>
+            <View style={styles.selectContainerLeft}>
+              <Text style={styles.titleNameText}>Weather Type</Text>
+            </View>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {weatherTypeOptions.map((option, index) => (
+                <TouchableOpacity
+                  style={[
+                    styles.optionButton,
+                    weatherType === option && styles.selectedOption
+                  ]}
+                  key={index}
+                  onPress={() => handleWeatherTypeSelect(option)}
+                >
+                  <Text style={styles.optionText}>{option}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        <TouchableOpacity
+          style={styles.createProductButton}
+          onPress={handleAddProductsPress}
+        >
+          <Text style={styles.createProductButtonText}>Add Products</Text>
+        </TouchableOpacity>
+        <Text style={styles.productsTitleText}>Products</Text>
+        <View style={styles.productsContainer}>
+          {savedItems && savedItems.length > 0 ? (
+          savedItems.map((item, index) => (
+            <View key={index} style={styles.productCard}>
+              <Text style={styles.productCardTitle}>
+                {typeof item === "number" ? item : item.itemName}
+              </Text>
+            </View>
+          ))
+                ) : (
+          <View style={styles.productCard}>
+            <Text style={styles.productCardTitle}>No selected items</Text>
+          </View>
+                )}
+        </View>
+      </ScrollView>
     </View>
   );
 };
@@ -237,26 +260,38 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
-    alignItems: "center",
+    backgroundColor: "#B7C4CF",
   },
-  headButtonContainer: {
-    width: "100%",
-    height: "20%",
+  headerContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingTop: 40,
-    paddingHorizontal: 20,
-    backgroundColor: "rgb(239, 245, 147)",
+    justifyContent: "space-around"
+  },
+  tabTop: {
+    marginTop: 30,
+    width: 180,
+    backgroundColor: "white",
+    height: 60,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 8,
+    paddingLeft: 30,
+    paddingTop: 13,
+  },
+  tabText: {
+    fontFamily: "Lato-Bold",
+    fontSize: 23
+  },
+  contentContainer: {
+    backgroundColor: "white"
   },
   createRoutineButton: {
-    width: "48%",
-    height: 50,
+    width: "25%",
+    height: 40,
     backgroundColor: "rgba(1, 90, 131, 255)",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 10,
+    marginTop: 40,
     borderRadius: 25,
   },
   createRoutineButtonText: {
@@ -269,14 +304,13 @@ const styles = StyleSheet.create({
     width: 20, 
   },
   cancelButton: {
-    width: "48%",
-    height: 50,
-    backgroundColor: "rgba(211, 211, 211, 255)",
-    borderColor: "rgba(1, 90, 131, 255)",
-    borderWidth: 1,
+    width: "15%",
+    height: 30,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 10,
+    marginTop: 45,
+    marginRight: 10,
     borderRadius: 25,
   },
   cancelButtonText: {
@@ -284,11 +318,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Lato-Bold",
     textAlign: "center",
-  },
-  separator: {
-    color: "rgba(1, 90, 131, 255)",
-    fontSize: 15,
-    textAlign: "center",
+    textDecorationLine: "underline"
   },
   newNameContainer: {
     flexDirection: "row",
@@ -296,18 +326,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingRight:20,
     paddingLeft:20,
-    marginTop: 20,
+    marginTop: 30,
     marginBottom: 20,
   },
-  nameContainer: {
-    backgroundColor: "rgb(80, 122, 145)",
-    borderRadius: 10,
-    padding: 10,
-    textAlign: "center"
-  },
   titleNameText: {
-    fontSize: 16,
-    color: "white",
+    fontSize: 20,
+    color: "#015A83",
     fontFamily: "Lato-Bold",
   },
   searchBox: {
@@ -315,37 +339,21 @@ const styles = StyleSheet.create({
     height: 50,
     borderWidth: 3,
     borderColor: "rgba(1, 90, 131, 255)",
+    borderRadius: 10,
     marginLeft: 10,
     padding: 15,
     color: "rgba(1, 90, 131, 255)",
     fontFamily: "PlayfairDisplay-Bold",
   },
-  pickerContainer: {
-    flexDirection: "row",
-    marginTop: 20,
-    marginBottom: 20,
-    width: "100%",
-    paddingRight: 10,
-    paddingLeft: 10,
-    height: 60,
-  },
   selectContainer: {
     flex: 1,
-    marginRight: 5,
-    borderWidth: 3,
-    borderColor: "rgba(1, 90, 131, 255)",
-    borderRadius: 5,
-    backgroundColor: "#EEE3CB",
+    marginHorizontal: 18,
+    backgroundColor: "white",
+    marginBottom: 20,
+    flexDirection: "row"
   },
-  picker: {
-    flex: 1,
-    height: 40,
-    fontFamily: "PlayfairDisplay-Bold",
-  },
-  pickerItemLabel: {
-    fontSize: 11, 
-    fontWeight:"bold",
-    fontFamily: "Lato-Bold",
+  selectContainerLeft: {
+    width: 100
   },
   createProductButton: {
     width: 300,
@@ -353,6 +361,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgb(80, 122, 145)",
     borderRadius: 25,
     justifyContent: "center",
+    alignSelf: "center",
     alignItems: "center",
     paddingRight:10,
     paddingLeft:10,
@@ -364,18 +373,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Lato-Bold",
   },
+  descriptionParentContainer: {
+    alignItems: "center"
+  },
   descriptionContainerTop: {
     width: 350,
-    height: 40,
+    height: 50,
     borderColor: "rgba(1, 90, 131, 255)",
-    borderTopWidth: 3,
-    borderLeftWidth: 3,
-    borderRightWidth: 3,
-    backgroundColor: "#EEE3CB",
+    borderWidth: 3,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    backgroundColor: "white",
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
-    marginTop: 20,
   },
   descriptionContainer: {
     width: 350,
@@ -384,21 +395,16 @@ const styles = StyleSheet.create({
     padding: 10,
     borderColor: "rgba(1, 90, 131, 255)",
     borderWidth: 3,
+    borderTopWidth: 0,
     textAlignVertical: "top",
     textAlign: "left",
-    marginBottom: 10,
-  },
-  descriptionTitleContainer: {
-    flex: 7,
-    paddingLeft: 10,
-    borderRightColor:  "rgba(1, 90, 131, 255)",
-    borderWidth: 3,
+    marginBottom: 30,
   },
   descriptionTitleText: {
+    fontSize: 20,
+    color: "#015A83",
     fontFamily: "Lato-Bold",
-    padding: 10,
-    color: "black",
-    fontSize: 15,
+    marginLeft: 15
   },
   publicToggle: {
     flex: 3,
@@ -408,6 +414,43 @@ const styles = StyleSheet.create({
     paddingRight: 10,
     textAlign: "center",
   },
+  optionButton: {
+    padding: 20,
+    marginHorizontal: 10,
+    backgroundColor: '#ddd',
+    borderRadius: 30,
+  },
+  selectedOption: {
+    backgroundColor: '#666',
+  },
+  optionText: {
+    fontFamily: "Lato-Bold",
+  },
+  productsTitleText: {
+    marginHorizontal: 18,
+    marginBottom: 15,
+    fontSize: 20,
+    color: "#015A83",
+    fontFamily: "Lato-Bold",
+  },
+  productCard: {
+    borderWidth: 1,
+    borderColor: "transparent",
+    borderRadius: 50,
+    backgroundColor: "#EEE3CB",
+    padding: 20,
+    marginBottom: 20,
+    height: 80,
+    justifyContent: "center",
+  },
+  productCardTitle: {
+    fontFamily: "Lato-BoldItalic",
+    fontSize: 18,
+    color: "rgba(1,90,131,255)",
+  },
+  productsContainer: {
+    marginHorizontal: 18
+  }
 });
 
 export default CreateNewRoutineScreen;
