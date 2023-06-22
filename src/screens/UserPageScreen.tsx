@@ -1,5 +1,4 @@
 import React, {
-  SetStateAction,
   useContext,
   useEffect,
   useState,
@@ -37,7 +36,7 @@ const UserPageScreen: React.FC = () => {
 
   useEffect(() => {
     fetchRoutines();
-  }, [userRoutines]);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
