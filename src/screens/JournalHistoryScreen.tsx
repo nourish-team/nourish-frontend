@@ -61,15 +61,25 @@ const JournalHistoryScreen: React.FC<Props> = ({ route, navigation }) => {
   const Item = ({ comments, date, img_url, routine_id }: ItemProps) => (
     <View style={styles.item}>
       <Text style={styles.date}>{formatDate(date)}</Text>
-      {img_url ? (
-        <Image source={{ uri: img_url }} style={styles.image} />
-      ) : (
-        <Image
-          source={require("../../assets/images/placeholder.png")}
-          style={styles.image}
-        />
-      )}
-      <Text style={styles.comment}>{comments}</Text>
+      <View style={styles.containerJournalInfo}>
+        {img_url ? (
+          <View style={styles.containerImg}>
+            <Image source={{ uri: img_url }} style={styles.image} />
+          </View>
+        ) : (
+          <View style={styles.containerImg}>
+            <Image
+              source={require("../../assets/images/placeholder.png")}
+              style={styles.image}
+            />
+          </View>
+        
+        )}
+        <View style={styles.containerComment}>
+          <Text style={styles.comment}>{comments}</Text>
+        </View>
+      </View>
+      
     </View>
   );
 
@@ -106,8 +116,7 @@ const JournalHistoryScreen: React.FC<Props> = ({ route, navigation }) => {
           {routineName} {"\n"}
           <Text style={styles.subTitleText}>Journal History</Text>
         </Text>
-        <ScrollView>
-          <View>
+        <ScrollView style={styles.scrollView}>
             {journalEntries.map((item, index) => (
               <Item
                 key={index}
@@ -117,7 +126,6 @@ const JournalHistoryScreen: React.FC<Props> = ({ route, navigation }) => {
                 routine_id={item.routine_id}
               />
             ))}
-          </View>
         </ScrollView>
       </View>
     </View>
@@ -157,7 +165,11 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 25,
     alignItems: "center",
     paddingBottom: 50,
+   
   },
+  scrollView: {
+    width: "100%"
+  }, 
   titleText: {
     fontFamily: "PlayfairDisplay-Bold",
     fontSize: 25,
@@ -173,28 +185,61 @@ const styles = StyleSheet.create({
   },
   item: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#EEE3CB",
     borderWidth: 2,
     borderColor: "rgba(1,90,131,255)",
-    margin: 10,
-    width: 300,
+    // margin: 10,
+    width: "100%",
+    height: 300,
     alignItems: "center",
+    paddingTop: 7,
+    // paddingLeft: 3,
+    // paddingRight: 3,
+    paddingBottom: 15,
+    marginTop: 15,
+
+  },
+  containerJournalInfo: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    // alignItems: "center",
+    // borderWidth: 2,
+    // borderColor: "red",
+    borderTopWidth: 2,
+    borderColor: "rgba(1,90,131,255)",
+    width: "100%",
+    height: "90%",
+    backgroundColor: "white",
+  },
+  containerComment: {
+    width: "50%",
+    height: "100%",
+    // backgroundColor: "rgba(1,90,131,255)",
     padding: 10,
   },
+  containerImg: {
+    // backgroundColor: "#EEE3CB",
+    width: "50%",
+    height: "100%",
+    alignItems: "center",
+  },
   image: {
-    width: 200,
-    height: 200,
-    borderWidth: 2,
-    borderColor: "rgba(1,90,131,255)",
-    marginBottom: 10,
+    width: "100%",
+    height: "100%",
+    // borderWidth: 2,
+    // borderColor: "rgba(1,90,131,255)",
+    // marginBottom: 10,
   },
   date: {
     fontFamily: "Lato-Bold",
+    fontSize: 16,
     marginBottom: 10,
     color: "rgba(1,90,131,255)",
   },
   comment: {
     fontFamily: "Lato-BoldItalic",
+    fontSize: 15,
   },
 });
 
