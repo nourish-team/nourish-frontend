@@ -36,7 +36,7 @@ const UserPageScreen: React.FC = () => {
 
   useEffect(() => {
     fetchRoutines();
-  }, []);
+  }, [userRoutines]);
 
   useFocusEffect(
     useCallback(() => {
