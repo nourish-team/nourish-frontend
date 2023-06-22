@@ -94,72 +94,7 @@ const AddJournalScreen: React.FC<Props> = ({ route, navigation }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.contentContainer}>
-        <View style={styles.outerPhoneContainer}>
-          <View style={styles.innerPhoneContainer}>
-            <View style={styles.dateContainer}>
-              <View style={styles.dateButton}>
-                <Text style={styles.dateButtonText}>
-                  date: {commentDate && commentDate.toLocaleDateString()}
-                </Text>
-              </View>
-              {isPickerShown && (
-                <DateTimePicker
-                  testID="dateTimePicker"
-                  value={commentDate}
-                  mode="date"
-                  onChange={onChange}
-                />
-              )}
-              <TouchableOpacity
-                style={styles.dateChangeButton}
-                onPress={handleShowPicker}
-              >
-                <Text style={styles.dateButtonText}>Change Date</Text>
-              </TouchableOpacity>
-            </View>
-            {text.length < 10 && clickedInputBox && (
-              <Text style={styles.errorMessage}>
-                Minimum 10-character comment required.
-              </Text>
-            )}
-            <View style={styles.comment}>
-              <TextInput
-                id="comment"
-                placeholder="Comment here"
-                onChangeText={onChangeText}
-                onPressIn={() => setClickedInputBox(true)}
-                value={text}
-                multiline
-                maxLength={380}
-                style={styles.commentText}
-              />
-            </View>
-
-            <View style={styles.submitContainer}>
-              <View style={styles.photoUpload}>
-                <PhotoUploadScreen image={image} setImage={setImage} />
-              </View>
-              <View>
-                <TouchableOpacity
-                  style={styles.submitButton}
-                  onPress={handleSubmitInfo}
-                  disabled={text.length < 10}
-                >
-                  <Text
-                    style={[
-                      styles.submitButtonText,
-                      text.length < 10 ? styles.submitButtonDisabled : {},
-                    ]}
-                  >
-                    Submit
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-          <Text style={styles.phoneButton}>◉</Text>
-        </View>
-        <View style={styles.textBubbleContainerLeft}>
+      <View style={styles.textBubbleContainerLeft}>
           <View style={styles.leftArrow} />
           <View style={styles.textBubbleLeft}>
             <Text style={styles.textBubbleTextLeft}>
@@ -167,11 +102,74 @@ const AddJournalScreen: React.FC<Props> = ({ route, navigation }) => {
             </Text>
           </View>
         </View>
+      <View style={styles.dateContainer}>
+        <View style={styles.textBubbleContainerLeft}>
+            <View style={styles.leftArrow} />
+            <View style={[styles.textBubbleLeft, styles.dateBubble]}>
+              <Text style={styles.dateBubbleTextLeft}>
+              {commentDate && commentDate.toLocaleDateString()}
+              </Text>
+            </View>
+            <TouchableOpacity
+            style={styles.dateChangeButton}
+            onPress={handleShowPicker}
+            >
+              <Text style={styles.dateButtonText}>Change Date</Text>
+            </TouchableOpacity>
+        </View>
+      </View>
         <View style={styles.textBubbleContainerRight}>
-          <View style={styles.textBubbleRight}>
-            <Text style={styles.textBubbleTextRight}>typing...</Text>
+            <View style={styles.textBubbleRight}>
+              <Text style={styles.textBubbleTextRight}>typing...</Text>
+            </View>
+            <View style={styles.rightArrow} />
+        </View>
+        {isPickerShown && (
+          <DateTimePicker
+            testID="dateTimePicker"
+            value={commentDate}
+            mode="date"
+            onChange={onChange}
+          />
+        )}
+        {text.length < 10 && clickedInputBox && (
+          <Text style={styles.errorMessage}>
+            Minimum 10-character comment required.
+          </Text>
+        )}
+        <View style={styles.commentContainer}>
+          <TextInput
+            id="comment"
+            placeholder="Comment your thoughts here"
+            onChangeText={onChangeText}
+            onPressIn={() => setClickedInputBox(true)}
+            value={text}
+            multiline
+            maxLength={380}
+            style={styles.commentText}
+          />
+        </View>
+
+        <View style={styles.submitContainer}>
+          <View style={styles.photoUpload}>
+            <PhotoUploadScreen image={image} setImage={setImage} />
           </View>
-          <View style={styles.rightArrow} />
+          <View>
+            <TouchableOpacity
+              style={styles.submitButton}
+              onPress={handleSubmitInfo}
+              disabled={text.length < 10}
+            >
+              <Text
+                style={[
+                  styles.submitButtonText,
+                  text.length < 10 ? styles.submitButtonDisabled : {},
+                ]}
+              >
+                Submit
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </View>
@@ -182,7 +180,7 @@ const styles = StyleSheet.create({
   container: {
     paddingTop: 50,
     flex: 1,
-    backgroundColor: "#EEE3CB",
+    backgroundColor: "#B7C4CF",
   },
   backContainer: {
     flexDirection: "row",
@@ -210,60 +208,41 @@ const styles = StyleSheet.create({
     height: "100%",
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    alignItems: "center",
+    paddingTop: 20
   },
   question: {
     margin: 5,
     marginTop: 15,
     fontSize: 20,
   },
-  comment: {
-    width: 250,
-    height: 230,
-    backgroundColor: "lightgrey",
-    margin: 20,
+  commentContainer: {
+    width: 320,
+    height: 280,
+    backgroundColor: "white",
+    borderColor: "#015A83",
+    borderWidth: 2,
+    marginVertical: 10,
+    padding: 10,
+    alignSelf: "center"
   },
   commentText: {
     fontFamily: "Lato-Regular",
     padding: 5,
+    fontSize: 15
   },
   photoUpload: {
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "lightgrey",
-    width: 110,
+    backgroundColor: "#EEE3CB",
+    width: 150,
     height: 35,
     borderRadius: 20,
     borderColor: "transparent",
   },
-  outerPhoneContainer: {
-    borderWidth: 2,
-    borderRadius: 20,
-    borderColor: "transparent",
-    marginTop: 30,
-    width: 330,
-    alignItems: "center",
-    backgroundColor: "#5A5A5A",
-  },
-  innerPhoneContainer: {
-    backgroundColor: "white",
-    borderWidth: 2,
-    borderRadius: 20,
-    borderColor: "transparent",
-    padding: 15,
-    margin: 30,
-    width: 270,
-    alignItems: "center",
-  },
-  phoneButton: {
-    fontSize: 70,
-    color: "#d3d3d3",
-    marginTop: -50,
-  },
   textBubbleContainerLeft: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 40,
+    marginTop: 20,
     marginBottom: 5,
     marginLeft: 30,
     marginRight: "auto",
@@ -271,8 +250,8 @@ const styles = StyleSheet.create({
   textBubbleContainerRight: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 20,
-    marginBottom: 5,
+    marginTop: 10,
+    marginBottom: 15,
     marginLeft: "auto",
     marginRight: 40,
   },
@@ -312,7 +291,14 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     maxWidth: "85%",
   },
+  dateBubble: {
+    marginRight: 5
+  },
   textBubbleTextLeft: {
+    fontSize: 17,
+    fontFamily: "Lato-Bold",
+  },
+  dateBubbleTextLeft: {
     fontSize: 17,
     fontFamily: "Lato-Bold",
   },
@@ -324,26 +310,25 @@ const styles = StyleSheet.create({
   dateContainer: {
     flexDirection: "row",
     gap: 15,
-  },
-  dateButton: {
-    padding: 5,
+    justifyContent: 'flex-start',
   },
   dateChangeButton: {
-    borderWidth: 2,
-    borderColor: "transparent",
-    backgroundColor: "#B7C4CF",
-    padding: 5,
+    padding: 10,
   },
   dateButtonText: {
     fontFamily: "Lato-Bold",
     fontSize: 16,
+    textDecorationLine: "underline",
+    color: "#015A83"
   },
   submitContainer: {
     flexDirection: "row",
     gap: 5,
+    alignSelf: "center",
+    marginTop: 10
   },
   submitButton: {
-    backgroundColor: "#EEE3CB",
+    backgroundColor: "#015A83",
     borderRadius: 30,
     borderColor: "transparent",
     padding: 10,
@@ -351,15 +336,17 @@ const styles = StyleSheet.create({
   },
   submitButtonText: {
     fontFamily: "Lato-Bold",
+    color: "white"
   },
   submitButtonDisabled: {
-    color: "#A40606",
+    color: "white",
   },
   errorMessage: {
     color: "#A40606",
     fontSize: 12,
     marginTop: 10,
     marginHorizontal: -10,
+    textAlign: "center"
   },
 });
 
