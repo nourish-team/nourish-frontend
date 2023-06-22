@@ -228,12 +228,20 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
       </View>
       
       <View style={styles.filter}>
-          <Modal visible={modalVisible}  animationType="slide" transparent={true}>
+          <Modal visible={modalVisible}  animationType="slide" 
+          transparent={true}
+          onRequestClose={() => {
+            handleModal();
+          }}>
+            <TouchableOpacity
+            style={styles.modalContainer}
+            onPressOut={handleModal}
+            >
             <View style={styles.modalView}>
-            <Text style={styles.titleFilter}>Filter On:</Text>
+            <Text style={styles.titleFilter}>Filter on</Text>
               <View style={styles.filterTag}>
+              <Text style={styles.categoryTitle}>⊹⊹⊹⊹⊹ weather type ⊹⊹⊹⊹⊹</Text>
                 <View style={styles.category}>
-                  <Text style={styles.categoryTitle}>Weather Type</Text>
                   <TouchableOpacity style={styles.categoryTag} onPress={() => filterOnCategory("dry air")}>
                     <Text style={styles.categoryText}>dry air</Text>
                   </TouchableOpacity>
@@ -249,8 +257,8 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
                 </View>
               </View>
               <View style={styles.filterTag}>
+                <Text style={styles.categoryTitle}>⊹⊹⊹⊹⊹ likes ⊹⊹⊹⊹⊹</Text>
                 <View style={styles.category}>
-                  <Text style={styles.categoryTitle}>Likes</Text>
                   <TouchableOpacity style={styles.categoryTag} onPress={() => filterOnLikes("highest")}>
                     <Text style={styles.categoryText}>highest</Text>
                   </TouchableOpacity>
@@ -263,6 +271,7 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
                 <Text style={styles.backText}>Back</Text>
               </TouchableOpacity>
             </View>
+            </TouchableOpacity>
           </Modal>
       </View>
       {fetchRoutinesError && <Text>Oops, something went wrong</Text>}
@@ -270,7 +279,8 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
         {routinesByType.map((routine: any) => (
           <View key={routine.id} style={styles.routineContainer}>
             <View style={styles.routineContainerTop}>
-              <Text style={styles.userName}>{routine.user_id.username}:</Text>
+              <Text style={styles.userName}>{routine.user_id.username}</Text>
+              <Text style={styles.stars}>⊹</Text>
               <Text style={styles.routineName}>{routine.routine_name}</Text>
               <Text style={styles.createdAt}>{routine.created_at}</Text>
             </View>
@@ -278,20 +288,23 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
             <View style={styles.routineContainerBottom}>
               {routine.products.map((product: any, index: number) => (
                 <View key={index} style={styles.routineProduct}>
-                  <Text style={styles.brandName}>{product.brand}</Text>
+                  <Text style={styles.brandName}>⊹ {product.brand}</Text>
                   <Text style={styles.productName}>{product.productName}</Text>
                 </View>
               ))}
-              {routine.description && 
-                <Text>{routine.description}</Text>}
+              {routine.description &&
+                <View style={styles.descriptionBox}>
+                  <Text style={styles.descriptionText}>{routine.description}</Text>
+                </View>
+              } 
               <TouchableOpacity
                 style={styles.likeButton}
                 onPress={() => handleClickLike(routine.id, routine.liked)}
               >
                 {routine.liked ? (
-                  <Icon name="heart" size={20} color="#FFD1DC" />
+                  <Icon name="heart" size={30} color="#015a83" />
                 ) : (
-                  <Icon name="heart-o" size={20} />
+                  <Icon name="heart-o" size={30} />
                 )}
                 <Text style={styles.likesText}>
                   {" "}
@@ -318,6 +331,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     width: "100%",
+    height: 60,
     justifyContent: "center"
   },
   container: {
@@ -325,18 +339,22 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   routineContainer: {
-    marginHorizontal: 40,
+    // width: "90%",
+    marginHorizontal: 20,
     marginBottom: 40,
   },
   routineName: {
-    margin: 10,
-    fontFamily: "Lato-Bold",
-    fontSize: 18,
+    // margin: 10,
+    fontFamily: "Lato-BoldItalic",
+    fontSize: 26,
   },
   userName: {
-    fontFamily: "PlayfairDisplay-Bold",
-    fontSize: 20,
-    marginLeft: 6,
+    fontFamily: "Lato-BoldItalic",
+    fontSize: 26,
+    marginLeft: 13,
+    padding: 6,
+    marginRight: 0,
+    paddingRight: 0,
   },
   routineProduct: {
     backgroundColor: "#EEE3CB",
@@ -347,8 +365,31 @@ const styles = StyleSheet.create({
   },
   createdAt: {
     margin: 10,
+    marginLeft: 13,
     fontFamily: "Lato-Regular",
+    fontSize: 16,
+    paddingLeft: 6,
   },
+  stars: {
+    fontSize: 25,
+    fontFamily: "Lato-Bold",
+    color: "rgba(1,90,131,255)",
+    padding: 10,
+  },
+  descriptionBox: {
+    width: "100%",
+    borderColor: "rgba(1,90,131,255)",
+    borderWidth: 3,
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 10,
+  },
+  descriptionText: {
+    fontFamily: "Lato-Regular",
+    fontSize: 17,
+    padding: 4,
+  },
+
   likeButton: {
     marginTop: 10,
     flexDirection: "row",
@@ -369,39 +410,47 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    padding: 10,
+    padding: 4,
+    paddingBottom: 0,
     marginBottom: 25,
   },
   titleText: {
-    fontSize: 20,
+    fontSize: 30,
     fontFamily: "Lato-Bold",
     color: "white",
     letterSpacing: 1.5,
     marginBottom: 30,
-    marginTop: Dimensions.get("window").height * 0.06,
+    marginTop: Dimensions.get("window").height * 0.05,
     textAlign: "center",
   },
   backButton: {
     backgroundColor: "#EEE3CB",
     borderRadius: 30,
-    width: 80,
+    width: 150,
+    height: 50,
     alignSelf: "center",
     padding: 10,
-    marginBottom: 30,
+    // marginBottom: 30,
     margin: 5,
   },
+
+  filterButton: {
+    borderWidth: 3,
+    borderColor: "rgba(1,90,131,255)",
+  },
+
   backText: {
     textAlign: "center",
     fontFamily: "Lato-Bold",
-    fontSize: 15,
+    fontSize: 20,
   },
   routineContainerTop: {
-    height: 70,
+    height: 90,
     borderColor: "rgba(1,90,131,255)",
     borderTopWidth: 3,
     borderLeftWidth: 3,
     borderRightWidth: 3,
-    backgroundColor: "#B7C4CF",
+    backgroundColor: "#EEE3CB",
     alignItems: "center",
     // justifyContent: "center",
     flexDirection: "row",
@@ -414,19 +463,22 @@ const styles = StyleSheet.create({
     borderWidth: 3,
   },
   brandName: {
-    color: "gray",
+    color: "black",
     fontFamily: "PlayfairDisplay-Bold",
-    fontSize: 15,
+    fontSize: 19,
   },
   productName: {
     color: "rgba(1, 90, 131, 255)",
     fontFamily: "Lato-Bold",
     marginBottom: 5,
-    fontSize: 15,
+    fontSize: 19,
   },
   likesText: {
     fontFamily: "PlayfairDisplay-Bold",
     fontSize: 15,
+  },
+  modalContainer: {
+      flex: 1,
   },
   modalView: {
     backgroundColor: "white",
@@ -471,6 +523,7 @@ const styles = StyleSheet.create({
   categoryTitle: {
     fontFamily: "Lato-Bold",
     fontSize: 22,
+    color: "rgba(1,90,131,255)",
     padding: 6,
   },
   titleFilter: {
