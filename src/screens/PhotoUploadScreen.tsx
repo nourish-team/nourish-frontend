@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Image, View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { UPLOAD_PRESET, CLOUD_NAME } from "@env";
+// import { UPLOAD_PRESET, CLOUD_NAME } from "@env";
 
 export default function PhotoUploadScreen({
   image,
@@ -35,13 +35,13 @@ export default function PhotoUploadScreen({
         const base64Img = "data:image/jpeg;base64," + result.assets[0].base64;
         const uploadData = {
           file: base64Img,
-          upload_preset: UPLOAD_PRESET,
+          upload_preset: "purbnxtr",
         };
 
         setLoading(false);
 
         try {
-          fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`, {
+          fetch(`https://api.cloudinary.com/v1_1/ds1mzx8nh/upload`, {
             method: "POST",
             body: JSON.stringify(uploadData),
             headers: {
