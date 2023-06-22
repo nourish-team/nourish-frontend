@@ -92,21 +92,6 @@ const HomeScreen: React.FC = () => {
     }
   }, [location]);
 
-  // const fetchUserData = async () => {
-  //   try {
-  //     const storedUserId = await AsyncStorage.getItem("userId");
-  //     if (storedUserId) {
-  //       const userId = JSON.parse(storedUserId);
-  //       setUserId(userId);
-  //     }
-  //     const storedUserName = await AsyncStorage.getItem("username");
-  //     setUserId(storedUserId);
-  //     setUserName(storedUserName);
-  //   } catch (error) {
-  //     console.error("Error occurred while fetching user data: ", error);
-  //   }
-  // };
-
   const getLocation = async () => {
     console.log("getting location...");
     const { status } = await Location.requestForegroundPermissionsAsync();
@@ -227,47 +212,48 @@ const HomeScreen: React.FC = () => {
         <View style={styles.greetContainer}>
           <Text style={styles.greetTitle}>Hello {userName}...</Text>
           <Text style={styles.greetText}>
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Ipsa modi
-            placeat dolor, obcaecati quod impedit incidunt nesciunt deleniti
-            sequi odit aperiam aliquam repellat aliquid numquam reprehenderit,
-            quas quae enim repudiandae.
+          Welcome to nourish, your personal companion for achieving healthy and radiant skin. Explore and unleash the potential of your skincare journey with us.
           </Text>
         </View>
         <View style={styles.weatherCardContainer}>
           <ImageBackground
             source={backgroundImage}
-            style={{ width: "100%", borderRadius: 10 }}
+            style={styles.weatherImage}
             resizeMode="cover"
           >
-            <Text style={styles.weatherText}>
-              {weatherData?.current?.condition?.text}
-            </Text>
-            <Text style={styles.weatherInfoText}>
-              Humidity: {weatherData?.current?.humidity}%
-            </Text>
-            <Text style={styles.weatherInfoText}>
-              Temperature: {weatherData?.current?.temp_c}°C
-            </Text>
-            <Text style={styles.weatherInfoText}>
-              City: {weatherData?.location?.name}
-            </Text>
-            <Text style={[styles.weatherInfoText, styles.weatherInfoTextLast]}>
-              UV index: {weatherData?.current?.uv}
-            </Text>
-            {weatherData?.current?.uv && weatherData.current.uv >= 5 && (
-              <Text style={styles.reminderText}>
-                Don't forget to wear sunscreen!
+            <View style={styles.weatherTextContainer}>
+              <Text style={styles.weatherText}>
+                {weatherData?.current?.condition?.text}
               </Text>
-            )}
+              <Text style={styles.weatherInfoText}>
+                Humidity: {weatherData?.current?.humidity}%
+              </Text>
+              <Text style={styles.weatherInfoText}>
+                Temperature: {weatherData?.current?.temp_c}°C
+              </Text>
+              <Text style={styles.weatherInfoText}>
+                City: {weatherData?.location?.name}
+              </Text>
+              <Text style={[styles.weatherInfoText, styles.weatherInfoTextLast]}>
+                UV index: {weatherData?.current?.uv}
+              </Text>
+              {weatherData?.current?.uv && weatherData.current.uv >= 5 && (
+                <Text style={styles.reminderText}>
+                  Don't forget to wear sunscreen!
+                </Text>
+              )}
+            </View>
           </ImageBackground>
         </View>
-        <TouchableOpacity onPress={handleTopTenPress} style={styles.topTenContainer}>
-          <Text style={styles.topTenFont}>Top 10 Liked Routines</Text>
+        <TouchableOpacity onPress={handleTopTenPress} style={styles.topTenContainer}> 
+          <Image
+          source={require("../../assets/images/topten.png")}
+          style={styles.topTenImage}
+          resizeMode="contain"
+        />
+        <Text style={styles.topTenFont}>Top 10 Liked Routines</Text>
         </TouchableOpacity>
-        {/* <Image
-          source={require("../../assets/images/squiggly-line.png")}
-          style={styles.squigglyLine}
-        /> */}
+        <Text style={styles.separator}>⊹ ⊹ ⊹ ⊹ ⊹ ⊹ ⊹ ⊹ ⊹ ⊹ ⊹ ⊹ ⊹ ⊹</Text>
         <Text style={styles.infoText}>browse by</Text>
         <Text style={styles.infoText}>skin type</Text>
         <ScrollView
@@ -304,8 +290,9 @@ const HomeScreen: React.FC = () => {
         </ScrollView>
         <View style={styles.footerContainer}>
           <Image
-            source={require("../../assets/images/footer-shape-dark.png")}
+            source={require("../../assets/images/footer-shape.png")}
             style={styles.footerImage}
+            resizeMode="stretch"
           />
         </View>
       </ScrollView>
@@ -334,8 +321,6 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flex: 1,
     backgroundColor: "white",
-    paddingLeft: 20,
-    paddingRight: 20,
     marginBottom: 90,
   },
   titleContainer: {
@@ -364,31 +349,27 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(1,90,131,255)",
     marginTop: -10,
   },
-  squigglyLine: {
-    width: "100%",
-    height: "undefined",
-    aspectRatio: 1,
-    maxWidth: "10%",
-    maxHeight: "10%",
-  },
   infoText: {
     textAlign: "right",
     fontSize: 30,
     fontFamily: "PlayfairDisplay-Bold",
     color: "#1B2021",
     lineHeight: 30,
+    marginRight: 20,
   },
   cardContainer: {
     flexDirection: "row",
     marginTop: 30,
     paddingHorizontal: 10,
     paddingBottom: 80,
+    marginLeft: 20,
+    marginRight: 20,
   },
   card: {
-    width: 120,
-    height: 180,
+    width: 150,
+    height: 225,
     borderRadius: 10,
-    backgroundColor: "white",
+    backgroundColor: "#9BABB8",
     justifyContent: "center",
     alignItems: "center",
     elevation: 3,
@@ -397,12 +378,14 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   cardText: {
-    color: "black",
-    fontSize: 16,
+    color: "white",
+    fontSize: 20,
     fontFamily: "Lato-Bold",
   },
   greetContainer: {
-    backgroundColor: "#D7C0AE",
+    backgroundColor: "white",
+    borderColor: "rgba(1,90,131,255)",
+    borderWidth: 3,
     borderRadius: 10,
     padding: 25,
     marginBottom: 20,
@@ -411,6 +394,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 2,
     elevation: 2,
+    marginLeft: 20,
+    marginRight: 20,
   },
   greetTitle: {
     fontFamily: "PlayfairDisplay-BoldItalic",
@@ -452,6 +437,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     overflow: "hidden",
+    marginLeft: 20,
+    marginRight: 20,
+  },
+  weatherImage: { 
+    width: "100%", 
+    borderRadius: 10, 
+  },
+  weatherTextContainer: {
+    padding: 10
   },
   weatherText: {
     fontSize: 20,
@@ -500,14 +494,32 @@ const styles = StyleSheet.create({
     margin: 20,
   },
   topTenContainer: {
-    width: "100%",
-    height: 100,
-    borderWidth: 2,
+    height: 70,
     borderRadius: 10,
-    marginBottom: 30
+    marginBottom: 50,
+    marginLeft: 20,
+    marginRight: 20,
+    backgroundColor: "#EEE3CB",
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10
   },
   topTenFont: {
-    textAlign: "center"
+    textAlign: "center",
+    fontFamily: "PlayfairDisplay-Bold",
+    fontSize: 23,
+    color: "rgba(1,90,131,255)",
+  },
+  topTenImage: {
+    width: 50,
+    height: 50,
+    marginRight: 20
+  },
+  separator: {
+    textAlign: "center",
+    marginBottom: 30,
+    color: "rgba(1,90,131,255)",
+    fontSize: 20
   }
 });
 
