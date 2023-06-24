@@ -9,10 +9,11 @@
 2. [Getting Started](##GettingStarted):
     - Prerequisites
     - Installation
-- Contributing
+3. Basic Outline
+    - APIs & Data
 - License
 - Acknowledgments
-- 
+- - Contributing
 ## Intro
 Nourish is a skincare tracking app designed to empower users in their skincare journey. 
 Our goal is to provide a platform where users can journal and monitor the effectiveness of their skincare routine, helping them identify what products and combinations work best for them.
@@ -74,6 +75,21 @@ npm install
 ```sh
 npm expo start
 ```
+
+## Basic Outline
+
+### APIs & Data
+
+The major APIs we used where: 
+   
+- ![Firebase](https://img.shields.io/badge/Firebase-blue?logo=react) :
+  
+Firebase is a Backend as a Service (BaaS) platform provided by Google. It offers a range of services and tools that aid in app development, such as user authentication, real-time database, cloud storage, and cloud messaging. 
+In this particular case, we used Firebase for user authentication, ensuring that users can securely register and log in to safeguard their data.
+
+- Seeding skincare data:
+
+Since free skincare APIs are hard to come by, we seeded our database with the data provided by [Laura Robertson](https://github.com/LauraRobertson/skincareAPI). Without this data this project was not possible in two weeks’ time. 
 
 
 
