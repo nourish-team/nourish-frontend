@@ -1,3 +1,7 @@
+<div align="center">
+<img width="300" alt="nourish_logo" src="https://github.com/nourish-team/nourish-frontend/assets/114712265/3eb85d69-f70d-4994-89a5-638a53f3194d">
+</div> 
+
 # nourish
 
 ## Table of Contents
