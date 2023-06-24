@@ -43,10 +43,12 @@ Nourish aims to be a comprehensive companion for skincare enthusiasts, fostering
 ### Technologies Used
 
 - ![React Native](https://img.shields.io/badge/React%20Native-blue?logo=react)
-- TypeScript
-- Expo
-- Firebase
-- Cloudinary
+- ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+- ![Expo](https://img.shields.io/badge/Expo-000020?logo=expo&logoColor=white)
+- ![Firebase](https://img.shields.io/badge/Firebase-blue?logo=react)
+- ![React Native](https://img.shields.io/badge/Firebase-gray?logo=firebase&logoColor=FFCA28)
+- ![Cloudinary](https://img.shields.io/badge/Cloudinary-407AFC)
+- ![Google Play](https://img.shields.io/badge/Google%20Play-414141?logo=googleplay)
 
 ## Getting Started
 
