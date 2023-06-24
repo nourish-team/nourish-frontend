@@ -6,10 +6,9 @@
     - Demo
     - Features
     - Technologies Used
-2. [Getting Started](##GettingStarted): 
+2. [Getting Started](##GettingStarted):
+    - Prerequisites
     - Installation
-    - Usage
-    - Folder Structure
 - Contributing
 - License
 - Acknowledgments
@@ -56,6 +55,8 @@ Nourish aims to be a comprehensive companion for skincare enthusiasts, fostering
 
 To initiate the authentication process, please ensure you have a Firebase account set up. If you don't have one, you can easily create an account by following the provided link.
 Additionally, it is necessary to fork the server-side repository of Nourish. You can find the repository at the following link: [Nourish backend Github](https://github.com/nourish-team/nourish-backend)
+
+To deploy our mobile app, we utilized ![Google Play](https://img.shields.io/badge/Google%20Play-414141?logo=googleplay). If you plan on leveraging ![Google Play](https://img.shields.io/badge/Google%20Play-414141?logo=googleplay), it's important to note that you'll need to create a ![Google Play](https://img.shields.io/badge/Google%20Play-414141?logo=googleplay) account, which involves a cost. Additionally, bundling the application is a prerequisite for deploying it on Google Play. However, there may be challenges involved in the bundling process, especially when using ![React Native](https://img.shields.io/badge/Firebase-gray?logo=firebase&logoColor=FFCA28). It is advisable to familiarize yourself with the steps for bundling an Expo app for deployment 
 
 ### Installation
 
