@@ -11,9 +11,11 @@
     - Installation
 3. Basic Outline
     - APIs & Data
-- License
-- Acknowledgments
-- - Contributing
+4. License
+5. Contributing
+6. Contact
+7. Acknowledgments
+
 ## Intro
 Nourish is a skincare tracking app designed to empower users in their skincare journey. 
 Our goal is to provide a platform where users can journal and monitor the effectiveness of their skincare routine, helping them identify what products and combinations work best for them.
@@ -91,9 +93,29 @@ In this particular case, we used Firebase for user authentication, ensuring that
 
 Since free skincare APIs are hard to come by, we seeded our database with the data provided by [Laura Robertson](https://github.com/LauraRobertson/skincareAPI). Without this data this project was not possible in two weeks’ time. 
 
+## License
 
+This project is licensed under the MIT License.
 
+## Contributing
 
+Contributions are welcome! If you would like to contribute to nourish, please follow these steps:
+
+1. Fork the Project
+2. Create your Feature Branch (git checkout -b feature/newSexyFeature)
+3. Commit your Changes (git commit -m 'Add some newSexyFeature')
+4. Push to the Branch (git push origin feature/newSexyFeature)
+5. Open a Pull Request
+
+## Contact
+
+- Anissa Chadouli
+- Lisa
+- Asako Ueno
+- Sean
+- Chai
+
+## Acknowledgments
 
 
   
