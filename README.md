@@ -117,5 +117,5 @@ Contributions are welcome! If you would like to contribute to nourish, please fo
 
 ## Acknowledgments
 
-
+- [Shields.io](https://shields.io/)
   
