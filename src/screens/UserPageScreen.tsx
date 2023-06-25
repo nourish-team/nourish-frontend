@@ -1,9 +1,4 @@
-import React, {
-  useContext,
-  useEffect,
-  useState,
-  useCallback,
-} from "react";
+import React, { useContext, useEffect, useState, useCallback } from "react";
 import {
   Text,
   View,
@@ -21,14 +16,38 @@ import { useFocusEffect } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
 import UserContext from "../contexts/UserContext";
 
+type RoutineType = {
+  _count: { likes: number };
+  created_at: string;
+  description: string;
+  id: number;
+  liked: boolean;
+  products: {
+    brand: string;
+    productName: string;
+  }[];
+  routine_name: string;
+  routine_product: number[];
+  user_id: {
+    id: number;
+    username: string;
+  };
+  weather_type: string;
+};
+
 type UserPageScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
   "UserPageScreen"
 >;
 
 const UserPageScreen: React.FC = () => {
-  const [userRoutines, setUserRoutines] = useState<any[]>([]);
-  const [userProducts, setUserProducts] = useState<any[]>([]);
+  const [userRoutines, setUserRoutines] = useState<RoutineType[]>([]);
+  const [userProducts, setUserProducts] = useState<
+    {
+      brand: string;
+      productName: string;
+    }[]
+  >([]);
   const [fetchRoutinesError, setFetchRoutinesError] = useState(false);
   const { userId } = useContext(UserContext);
   const navigation = useNavigation<UserPageScreenNavigationProp>();
@@ -93,7 +112,7 @@ const UserPageScreen: React.FC = () => {
         `https://nourishskin.herokuapp.com/routine/user/${userIdToString}`
       );
       const data = await response.json();
-      // console.log("LONG DATA ", data.productsOfRoutines);
+      console.log("LONG DATA ", data.productsOfRoutines);
       // console.log("USERRR ", data.routinesByUser);
       setUserRoutines(data.routinesByUser);
       setUserProducts(data.productsOfRoutines);

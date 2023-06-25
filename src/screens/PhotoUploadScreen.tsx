@@ -23,12 +23,13 @@ export default function PhotoUploadScreen({
       return;
     }
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      base64: true,
-    });
+    const result =
+      (await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 3],
+        base64: true,
+      })) || (await ImagePicker.getPendingResultAsync());
 
     if (!result.canceled) {
       if (result.assets && result.assets.length > 0) {

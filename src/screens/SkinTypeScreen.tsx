@@ -8,16 +8,61 @@ import {
   Image,
   Dimensions,
   ScrollView,
-  Modal
+  Modal,
 } from "react-native";
-import { ParamListBase, useNavigation } from "@react-navigation/native";
+
+import {
+  ParamListBase,
+  useNavigation,
+  RouteProp,
+} from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../navigation/types";
 import Icon from "react-native-vector-icons/FontAwesome";
 import UserContext from "../contexts/UserContext";
 
-const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
+type RoutineType = {
+  _count: { likes: number };
+  created_at: string;
+  description: string;
+  id: number;
+  liked: boolean;
+  products: {
+    brand: string;
+    productName: string;
+  }[];
+  routine_name: string;
+  routine_product: number[];
+  user_id: {
+    id: number;
+    username: string;
+  };
+  weather_type: string;
+};
+
+type Like = {
+  users_id: number;
+  routine_id: {
+    id: number;
+    routine_name: string;
+    routine_product: number[];
+    skin_type: string;
+    description: string | null;
+  };
+};
+
+type SkinCareTypeScreenRouteProp = RouteProp<
+  RootStackParamList,
+  "SkincareType"
+>;
+
+type Props = {
+  route: SkinCareTypeScreenRouteProp;
+};
+
+const SkincareTypeScreen: React.FC<Props> = ({ route }) => {
   const { skincareType } = route.params;
-  const [routinesByType, setRoutinesByType] = useState<any[]>([]);
+  const [routinesByType, setRoutinesByType] = useState<RoutineType[]>([]);
   const [fetchRoutinesError, setFetchRoutinesError] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const { userId } = useContext(UserContext);
@@ -30,12 +75,12 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
 
   useEffect(() => {
     fetchRoutinesByType();
+    // console.log(routinesByType);
   }, []);
 
   // useEffect(() => {
   //   console.log("render", routinesByType)
   // }, [routinesByType]);
- 
 
   const fetchRoutinesByType = async () => {
     try {
@@ -47,14 +92,20 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
       const likedResponse = await fetch(
         `https://nourishskin.herokuapp.com/like/user/${userId}`
       );
-      const likedData = await likedResponse.json();
-      const likedRoutineIds = likedData.map((like: any) => like.routine_id.id);
+      const likedData = await likedResponse.json().then((r) => {
+        console.log(r);
+        return r;
+      });
+      const likedRoutineIds = likedData.map((like: Like) => {
+        like.routine_id.id;
+      });
 
       const routinesWithLikes = [];
 
       for (const routine of data) {
-        const productPromises = routine.routine_product.map((productId: any) =>
-          fetch(`https://nourishskin.herokuapp.com/product/id/${productId}`)
+        const productPromises = routine.routine_product.map(
+          (productId: number) =>
+            fetch(`https://nourishskin.herokuapp.com/product/id/${productId}`)
         );
 
         const productResponses = await Promise.all(productPromises);
@@ -129,15 +180,17 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
       like: true,
     };
 
-
     try {
-      const response = await fetch(`https://nourishskin.herokuapp.com/like/routine`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(postReq),
-      });
+      const response = await fetch(
+        `https://nourishskin.herokuapp.com/like/routine`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(postReq),
+        }
+      );
 
       const data = await response.json();
       console.log("post:", response.status);
@@ -170,22 +223,22 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
   };
 
   const handleClickLike = (routineId: number, liked: boolean) => {
-    if(liked) {
+    if (liked) {
       handleDeleteLike(routineId);
     } else {
       handlePostLike(routineId);
-    };
+    }
   };
 
   const handleModal = () => {
-    setModalVisible(!modalVisible)
+    setModalVisible(!modalVisible);
   };
 
-  const filterOnCategory = (category: any) => {
-    if(category !== "all") {
-     const filterData = routinesByType.filter(routine => {
+  const filterOnCategory = (category: string) => {
+    if (category !== "all") {
+      const filterData = routinesByType.filter((routine) => {
         return routine["weather_type"] === category;
-      })
+      });
       setRoutinesByType(filterData);
     } else {
       fetchRoutinesByType();
@@ -193,18 +246,18 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
   };
 
   const filterOnLikes = (category: string) => {
-    if(category === "lowest") {
+    if (category === "lowest") {
       const filterdata = routinesByType.sort((a, b) => {
         return a._count.likes - b._count.likes;
-      })
+      });
       setRoutinesByType(filterdata);
     } else {
       const filterdata = routinesByType.sort((a, b) => {
         return b._count.likes - a._count.likes;
-      })
+      });
       setRoutinesByType(filterdata);
     }
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -226,32 +279,49 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
           <Text style={styles.backText}>Filter</Text>
         </TouchableOpacity>
       </View>
-      
+
       <View style={styles.filter}>
-          <Modal visible={modalVisible}  animationType="slide" 
+        <Modal
+          visible={modalVisible}
+          animationType="slide"
           transparent={true}
           onRequestClose={() => {
             handleModal();
-          }}>
-            <TouchableOpacity
+          }}
+        >
+          <TouchableOpacity
             style={styles.modalContainer}
             onPressOut={handleModal}
-            >
+          >
             <View style={styles.modalView}>
-            <Text style={styles.titleFilter}>Filter on</Text>
+              <Text style={styles.titleFilter}>Filter on</Text>
               <View style={styles.filterTag}>
-              <Text style={styles.categoryTitle}>⊹⊹⊹⊹⊹ weather type ⊹⊹⊹⊹⊹</Text>
+                <Text style={styles.categoryTitle}>
+                  ⊹⊹⊹⊹⊹ weather type ⊹⊹⊹⊹⊹
+                </Text>
                 <View style={styles.category}>
-                  <TouchableOpacity style={styles.categoryTag} onPress={() => filterOnCategory("dry air")}>
+                  <TouchableOpacity
+                    style={styles.categoryTag}
+                    onPress={() => filterOnCategory("dry air")}
+                  >
                     <Text style={styles.categoryText}>dry air</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.categoryTag}  onPress={() => filterOnCategory("hot air")}>
+                  <TouchableOpacity
+                    style={styles.categoryTag}
+                    onPress={() => filterOnCategory("hot air")}
+                  >
                     <Text style={styles.categoryText}>hot air</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.categoryTag} onPress={() => filterOnCategory("humid air")}>
+                  <TouchableOpacity
+                    style={styles.categoryTag}
+                    onPress={() => filterOnCategory("humid air")}
+                  >
                     <Text style={styles.categoryText}>humid air</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.categoryTag} onPress={() => filterOnCategory("all")}>
+                  <TouchableOpacity
+                    style={styles.categoryTag}
+                    onPress={() => filterOnCategory("all")}
+                  >
                     <Text style={styles.categoryText}>all</Text>
                   </TouchableOpacity>
                 </View>
@@ -259,24 +329,33 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
               <View style={styles.filterTag}>
                 <Text style={styles.categoryTitle}>⊹⊹⊹⊹⊹ likes ⊹⊹⊹⊹⊹</Text>
                 <View style={styles.category}>
-                  <TouchableOpacity style={styles.categoryTag} onPress={() => filterOnLikes("highest")}>
+                  <TouchableOpacity
+                    style={styles.categoryTag}
+                    onPress={() => filterOnLikes("highest")}
+                  >
                     <Text style={styles.categoryText}>highest</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.categoryTag} onPress={() => filterOnLikes("lowest")}>
+                  <TouchableOpacity
+                    style={styles.categoryTag}
+                    onPress={() => filterOnLikes("lowest")}
+                  >
                     <Text style={styles.categoryText}>lowest</Text>
                   </TouchableOpacity>
                 </View>
               </View>
-              <TouchableOpacity style={styles.backButtonFilter} onPress={handleModal}>
+              <TouchableOpacity
+                style={styles.backButtonFilter}
+                onPress={handleModal}
+              >
                 <Text style={styles.backText}>Back</Text>
               </TouchableOpacity>
             </View>
-            </TouchableOpacity>
-          </Modal>
+          </TouchableOpacity>
+        </Modal>
       </View>
       {fetchRoutinesError && <Text>Oops, something went wrong</Text>}
       <ScrollView>
-        {routinesByType.map((routine: any) => (
+        {routinesByType.map((routine: RoutineType) => (
           <View key={routine.id} style={styles.routineContainer}>
             <View style={styles.routineContainerTop}>
               <Text style={styles.userName}>{routine.user_id.username}</Text>
@@ -286,17 +365,26 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
             </View>
 
             <View style={styles.routineContainerBottom}>
-              {routine.products.map((product: any, index: number) => (
-                <View key={index} style={styles.routineProduct}>
-                  <Text style={styles.brandName}>⊹ {product.brand}</Text>
-                  <Text style={styles.productName}>{product.productName}</Text>
-                </View>
-              ))}
-              {routine.description &&
+              {routine.products.map(
+                (
+                  product: { brand: string; productName: string },
+                  index: number
+                ) => (
+                  <View key={index} style={styles.routineProduct}>
+                    <Text style={styles.brandName}>⊹ {product.brand}</Text>
+                    <Text style={styles.productName}>
+                      {product.productName}
+                    </Text>
+                  </View>
+                )
+              )}
+              {routine.description && (
                 <View style={styles.descriptionBox}>
-                  <Text style={styles.descriptionText}>{routine.description}</Text>
+                  <Text style={styles.descriptionText}>
+                    {routine.description}
+                  </Text>
                 </View>
-              } 
+              )}
               <TouchableOpacity
                 style={styles.likeButton}
                 onPress={() => handleClickLike(routine.id, routine.liked)}
@@ -332,7 +420,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     width: "100%",
     height: 60,
-    justifyContent: "center"
+    justifyContent: "center",
   },
   container: {
     flex: 1,
@@ -454,7 +542,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     // justifyContent: "center",
     flexDirection: "row",
-    flexWrap: "wrap"
+    flexWrap: "wrap",
   },
   routineContainerBottom: {
     backgroundColor: "white",
@@ -478,7 +566,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   modalContainer: {
-      flex: 1,
+    flex: 1,
   },
   modalView: {
     backgroundColor: "white",
@@ -546,7 +634,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginTop: -20,
     justifyContent: "center",
-  }
+  },
 });
 
 export default SkincareTypeScreen;

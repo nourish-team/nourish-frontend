@@ -64,6 +64,7 @@ const UserRoutinePageScreen: React.FC<Props> = ({ route, navigation }) => {
       routineId,
       routineName,
       routineProduct,
+      routineDescription,
     });
   };
 
@@ -79,13 +80,16 @@ const UserRoutinePageScreen: React.FC<Props> = ({ route, navigation }) => {
       public: true,
     };
     try {
-      const response = await fetch(`https://nourishskin.herokuapp.com/routine/update`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(routineData),
-      });
+      const response = await fetch(
+        `https://nourishskin.herokuapp.com/routine/update`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(routineData),
+        }
+      );
 
       if (response.ok) {
         alert("Product deleted.");
@@ -104,7 +108,9 @@ const UserRoutinePageScreen: React.FC<Props> = ({ route, navigation }) => {
 
     try {
       const fetchPromises = routineProduct.map(async (pid) => {
-        const response = await fetch(`https://nourishskin.herokuapp.com/product/id/${pid}`);
+        const response = await fetch(
+          `https://nourishskin.herokuapp.com/product/id/${pid}`
+        );
         const data = await response.json();
         const newProduct = {
           productName: data.product_name,
