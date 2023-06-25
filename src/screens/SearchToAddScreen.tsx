@@ -33,7 +33,8 @@ type SearchResult = {
 };
 
 const SearchToAddScreen: React.FC<Props> = ({ route, navigation }) => {
-  const { routineId, routineName, routineProduct } = route.params;
+  const { routineId, routineName, routineProduct, routineDescription } =
+    route.params;
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [fetchItemsError, setFetchItemsError] = useState(false);
@@ -49,6 +50,7 @@ const SearchToAddScreen: React.FC<Props> = ({ route, navigation }) => {
       routineId,
       routineName,
       routineProduct,
+      routineDescription,
     });
   };
 
@@ -89,13 +91,16 @@ const SearchToAddScreen: React.FC<Props> = ({ route, navigation }) => {
     };
     console.log("ROUTINE DATA ", routineData);
     try {
-      const response = await fetch(`https://nourishskin.herokuapp.com/routine/update`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(routineData),
-      });
+      const response = await fetch(
+        `https://nourishskin.herokuapp.com/routine/update`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(routineData),
+        }
+      );
 
       if (response.ok) {
         console.log("response ok");
@@ -104,6 +109,7 @@ const SearchToAddScreen: React.FC<Props> = ({ route, navigation }) => {
           routineId,
           routineName,
           routineProduct: newRoutineProducts,
+          routineDescription,
         });
       } else {
         console.log("response not ok");

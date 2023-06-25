@@ -16,11 +16,14 @@ export type RootStackParamList = {
     routineId: number;
     routineName: string;
     routineProduct: number[];
+    routineDescription: string | null;
   };
   JournalHistoryScreen: { routineId: number; routineName: string };
-  CreateNewRoutineScreen: {
-    selectedItems: (number | { itemId: number; itemName: string })[];
-  };
+  CreateNewRoutineScreen:
+    | undefined
+    | {
+        selectedItems: (number | { itemId: number; itemName: string })[];
+      };
   SearchToAddNewScreen: undefined;
   WeatherType: { weatherType: string };
   TopTen: undefined;
