@@ -1,5 +1,5 @@
 <div align="center">
-<img width="300" alt="nourish_logo" src="https://github.com/nourish-team/nourish-frontend/assets/114712265/3eb85d69-f70d-4994-89a5-638a53f3194d">
+<img width="1000" alt="nourish_logo" src="https://github.com/nourish-team/nourish-frontend/assets/107352832/e64d1a8e-36d7-4734-9558-d3a26792b636">
 </div> 
 
 # nourish
@@ -7,7 +7,6 @@
 ## Table of Contents
 1. [Intro](##Intro):
     - About the project
-    - Demo
     - Features
     - Technologies Used
 2. [Getting Started](##GettingStarted):
@@ -37,7 +36,7 @@ Liked routines are conveniently saved for future reference, providing inspiratio
 
 Nourish aims to be a comprehensive companion for skincare enthusiasts, fostering a community where users can learn from one another and make informed decisions about their skincare routine.
 
-### Feautures 
+### Features 
 
 - User registration, login, and authentication using Firebase
 - Create and manage multiple skincare routines
@@ -86,7 +85,7 @@ npm expo start
 
 ### APIs & Data
 
-The major APIs we used where: 
+The major APIs we used were: 
    
 - ![Firebase](https://img.shields.io/badge/Firebase-blue?logo=react) :
   
@@ -113,16 +112,16 @@ Contributions are welcome! If you would like to contribute to nourish, please fo
 
 ## Contact
 
-- **Anissa Chadouli**, Product Manager 
-  (_**Github:**_ [Anissa3005](https://github.com/Anissa3005))
-- **Lisa Tan**, Tech Lead
-  (_**Github:**_ [oddpharmacy](https://github.com/oddpharmacy))
-- **Asako Ueno**, Frontend Engineer
-  (_**Github:**_ [asa-U](https://github.com/asa-U))
-- **Sean McKay**, Fullstack Engineer
-  (_**Github:**_ [shonancanuck](https://github.com/shonancanuck))
-- **Gee Chai**, Fullstack Engineer
-  (_**Github:**_ [FefesG5](https://github.com/FefesG5))
+- **Anissa Chadouli**,
+   [Anissa3005](https://github.com/Anissa3005), Product Manager 
+- **Lisa Tan**,
+  [oddpharmacy](https://github.com/oddpharmacy), Tech Lead
+- **Asako Ueno**,
+  [asa-U](https://github.com/asa-U), Frontend Engineer
+- **Sean McKay**,
+  [shonancanuck](https://github.com/shonancanuck),  Fullstack Engineer
+- **Gee Chai**,
+  [FefesG5](https://github.com/FefesG5), Fullstack Engineer
 
 ## Acknowledgments
 
