@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TextInput,
   Switch,
+  ScrollView
 } from "react-native";
 import { RootStackParamList } from "../navigation/types";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -36,16 +37,47 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
     (number | { itemId: number; itemName: string })[]
   >([]);
   const [routineName, setRoutineName] = useState("");
-  const skinTypeOptions = ["Oily", "Sensitive", "Dry", "Acne"];
+  const skinTypeOptions = [
+    "oily",
+    "sensitive",
+    "dry",
+    "acne",
+    "normal",
+    "combination",
+  ];
   const [selectedSkinType, setSelectedSkinType] = useState<string>("");
   const [isPublic, setIsPublic] = useState(false);
   const [error, setError] = useState(false);
+  const [createButtonDisabled, setCreateButtonDisabled] = useState(true);
+  const [description, setDescription] = useState("");
+  const weatherTypeOptions = [
+    "hot air",
+    "dry air",
+    "humid air",
+  ];
+  const [weatherType, setWeatherType] = useState<string>("");
 
   useEffect(() => {
     if (selectedItems && selectedItems.length > 0) {
       setSavedItems((prevSavedItems) => [...prevSavedItems, ...selectedItems]);
     }
   }, [selectedItems]);
+
+  useEffect(() => {
+    if (
+      userId &&
+      savedItems.length > 0 &&
+      routineName &&
+      selectedSkinType !== "" &&
+      selectedSkinType &&
+      weatherType !== "" &&
+      weatherType
+    ) {
+      setCreateButtonDisabled(false);
+    } else {
+      setCreateButtonDisabled(true);
+    }
+  }, [routineName, selectedSkinType, savedItems, weatherType]);
 
   const handleCancelButtonPress = () => {
     navigation.navigate("HomeScreen");
@@ -60,6 +92,10 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
   };
 
   const handleCreateRoutine = async () => {
+    if (createButtonDisabled) {
+      alert("Some fields are missing! :(");
+      return;
+    }
     const routineProducts = savedItems.map((item) => {
       if (typeof item === "number") {
         return item;
@@ -74,10 +110,12 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
       skin_type: selectedSkinType,
       routine_product: routineProducts,
       public: isPublic,
+      weather_type: weatherType,
+      description: description,
     };
 
     try {
-      const response = await fetch("http://10.0.2.2:8080/routine/create", {
+      const response = await fetch("https://nourishskin.herokuapp.com/routine/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -102,139 +140,317 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
     setSelectedSkinType(skinType);
   };
 
+  const handleWeatherTypeSelect = (weatherType: string) => {
+    setWeatherType(weatherType);
+  };
+
   return (
     <View style={styles.container}>
+      <View style={styles.headerContainer}>
+        <TouchableOpacity style={styles.tabTop} >
+          <Text style={styles.tabText}>new routine</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+              style={styles.createRoutineButton}
+              onPress={handleCreateRoutine}
+              >
+              <Text style={styles.createRoutineButtonText}>Create</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+              style={styles.cancelButton}
+              onPress={handleCancelButtonPress}
+              >
+              <Text style={styles.cancelButtonText}>Cancel</Text>
+        </TouchableOpacity>
+      </View>
       {error ? (
         <Text>Oops, there was a problem making your routine</Text>
       ) : null}
-      <Text style={styles.titleText}>Name your new routine!</Text>
-      <TextInput
-        style={styles.searchBox}
-        value={routineName}
-        onChangeText={(input) => setRoutineName(input)}
-      />
-      <Text>Select your skin type:</Text>
-      {skinTypeOptions.map((option) => (
+      <ScrollView style={styles.contentContainer}>
+        <View style={styles.newNameContainer}>
+          <Text style={styles.titleNameText}>Name</Text>
+          <TextInput
+          style={styles.searchBox}
+          value={routineName}
+          onChangeText={(input) => setRoutineName(input)}
+          />
+        </View>
+        <View style={styles.descriptionParentContainer}>
+          <View style={styles.descriptionContainerTop}>
+            <Text style={styles.descriptionTitleText}>Description</Text>
+            <View style={styles.publicToggle}>
+              <Text>Public:</Text>
+              <Switch value={isPublic} onValueChange={handlePublicToggle} />
+            </View>
+          </View>
+          <View style={styles.descriptionContainer}>
+              <TextInput
+              value={description}
+              onChangeText={setDescription}
+              placeholder="Describe your routine here..."
+              multiline
+              />
+          </View>
+        </View>
+        <View style={styles.selectContainer}>
+            <View style={styles.selectContainerLeft}>
+              <Text style={styles.titleNameText}>Skin Type</Text>
+            </View>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {skinTypeOptions.map((option, index) => (
+                <TouchableOpacity
+                  style={[
+                    styles.optionButton,
+                    selectedSkinType === option && styles.selectedOption
+                  ]}
+                  key={index}
+                  onPress={() => handleSkinTypeSelect(option)}
+                >
+                  <Text style={styles.optionText}>{option}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+          <View style={styles.selectContainer}>
+            <View style={styles.selectContainerLeft}>
+              <Text style={styles.titleNameText}>Weather Type</Text>
+            </View>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {weatherTypeOptions.map((option, index) => (
+                <TouchableOpacity
+                  style={[
+                    styles.optionButton,
+                    weatherType === option && styles.selectedOption
+                  ]}
+                  key={index}
+                  onPress={() => handleWeatherTypeSelect(option)}
+                >
+                  <Text style={styles.optionText}>{option}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
         <TouchableOpacity
-          key={option}
-          onPress={() => handleSkinTypeSelect(option)}
-          style={
-            selectedSkinType === option ? styles.selectedOption : styles.option
-          }
+          style={styles.createProductButton}
+          onPress={handleAddProductsPress}
         >
-          <Text>{option}</Text>
+          <Text style={styles.createProductButtonText}>Add Products</Text>
         </TouchableOpacity>
-      ))}
-      <TouchableOpacity
-        style={styles.createButton}
-        onPress={handleAddProductsPress}
-      >
-        <Text style={styles.createButtonText}>Add Products</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.createButton}
-        onPress={handleCreateRoutine}
-      >
-        <Text style={styles.createButtonText}>Create new routine</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.cancelButton}
-        onPress={handleCancelButtonPress}
-      >
-        <Text style={styles.cancelButtonText}>Cancel</Text>
-      </TouchableOpacity>
-      <View style={styles.publicToggle}>
-        <Text>Public:</Text>
-        <Switch value={isPublic} onValueChange={handlePublicToggle} />
-      </View>
-      {savedItems && savedItems.length > 0 ? (
-        savedItems.map((item, index) => (
-          <Text key={index}>
-            {typeof item === "number" ? item : item.itemName}
-          </Text>
-        ))
-      ) : (
-        <Text>No selected items</Text>
-      )}
-      <Text>User id is {userId}</Text>
+        <Text style={styles.productsTitleText}>Products</Text>
+        <View style={styles.productsContainer}>
+          {savedItems && savedItems.length > 0 ? (
+          savedItems.map((item, index) => (
+            <View key={index} style={styles.productCard}>
+              <Text style={styles.productCardTitle}>
+                {typeof item === "number" ? item : item.itemName}
+              </Text>
+            </View>
+          ))
+                ) : (
+          <View style={styles.productCard}>
+            <Text style={styles.productCardTitle}>No selected items</Text>
+          </View>
+                )}
+        </View>
+      </ScrollView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 70,
     flex: 1,
-    backgroundColor: "#FFFDD0",
-    paddingLeft: 20,
-    paddingRight: 20,
-    alignItems: "center",
+    backgroundColor: "#B7C4CF",
   },
-  searchBox: {
-    width: 300,
-    height: 50,
-    borderWidth: 3,
-    borderColor: "rgba(1, 90, 131, 255)",
-    marginBottom: 10,
-    padding: 15,
-    color: "rgba(1, 90, 131, 255)",
-    fontFamily: "PlayfairDisplay-Bold",
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around"
   },
-  createButton: {
-    width: 300,
-    height: 50,
+  tabTop: {
+    marginTop: 30,
+    width: 180,
+    backgroundColor: "white",
+    height: 60,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 8,
+    paddingLeft: 30,
+    paddingTop: 13,
+  },
+  tabText: {
+    fontFamily: "Lato-Bold",
+    fontSize: 23
+  },
+  contentContainer: {
+    backgroundColor: "white"
+  },
+  createRoutineButton: {
+    width: "25%",
+    height: 40,
     backgroundColor: "rgba(1, 90, 131, 255)",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 10,
+    marginTop: 40,
+    borderRadius: 25,
   },
-  createButtonText: {
+  createRoutineButtonText: {
     color: "white",
     fontSize: 16,
     fontFamily: "Lato-Bold",
+    textAlign: "center",
+  },
+  buttonSpacer: {
+    width: 20, 
   },
   cancelButton: {
-    width: 300,
-    height: 50,
-    backgroundColor: "white",
-    borderColor: "rgba(1, 90, 131, 255)",
+    width: "15%",
+    height: 30,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 10,
+    marginTop: 45,
+    marginRight: 10,
+    borderRadius: 25,
   },
   cancelButtonText: {
     color: "rgba(1, 90, 131, 255)",
     fontSize: 16,
     fontFamily: "Lato-Bold",
+    textAlign: "center",
+    textDecorationLine: "underline"
   },
-  titleText: {
-    textAlign: "left",
-    fontSize: 25,
-    fontFamily: "PlayfairDisplay-Bold",
-    color: "rgba(1,90,131,255)",
+  newNameContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingRight:20,
+    paddingLeft:20,
+    marginTop: 30,
     marginBottom: 20,
-    marginTop: -20,
   },
-  option: {
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "gray",
-    borderRadius: 5,
-    marginBottom: 10,
+  titleNameText: {
+    fontSize: 20,
+    color: "#015A83",
+    fontFamily: "Lato-Bold",
   },
-  selectedOption: {
+  searchBox: {
+    flex: 1,
+    height: 50,
+    borderWidth: 3,
+    borderColor: "rgba(1, 90, 131, 255)",
+    borderRadius: 10,
+    marginLeft: 10,
+    padding: 15,
+    color: "rgba(1, 90, 131, 255)",
+    fontFamily: "PlayfairDisplay-Bold",
+  },
+  selectContainer: {
+    flex: 1,
+    marginHorizontal: 18,
+    backgroundColor: "white",
+    marginBottom: 20,
+    flexDirection: "row"
+  },
+  selectContainerLeft: {
+    width: 100
+  },
+  createProductButton: {
+    width: 300,
+    height: 50,
+    backgroundColor: "rgb(80, 122, 145)",
+    borderRadius: 25,
+    justifyContent: "center",
+    alignSelf: "center",
+    alignItems: "center",
+    paddingRight:10,
+    paddingLeft:10,
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  createProductButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontFamily: "Lato-Bold",
+  },
+  descriptionParentContainer: {
+    alignItems: "center"
+  },
+  descriptionContainerTop: {
+    width: 350,
+    height: 50,
+    borderColor: "rgba(1, 90, 131, 255)",
+    borderWidth: 3,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    backgroundColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+  },
+  descriptionContainer: {
+    width: 350,
+    height: 200,
+    backgroundColor: "white",
     padding: 10,
-    borderWidth: 1,
-    borderColor: "blue",
-    borderRadius: 5,
-    marginBottom: 10,
-    backgroundColor: "lightblue",
+    borderColor: "rgba(1, 90, 131, 255)",
+    borderWidth: 3,
+    borderTopWidth: 0,
+    textAlignVertical: "top",
+    textAlign: "left",
+    marginBottom: 30,
+  },
+  descriptionTitleText: {
+    fontSize: 20,
+    color: "#015A83",
+    fontFamily: "Lato-Bold",
+    marginLeft: 15
   },
   publicToggle: {
+    flex: 3,
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 10,
+    justifyContent: "flex-end",
+    paddingRight: 10,
+    textAlign: "center",
   },
+  optionButton: {
+    padding: 20,
+    marginHorizontal: 10,
+    backgroundColor: '#ddd',
+    borderRadius: 30,
+  },
+  selectedOption: {
+    backgroundColor: '#666',
+  },
+  optionText: {
+    fontFamily: "Lato-Bold",
+  },
+  productsTitleText: {
+    marginHorizontal: 18,
+    marginBottom: 15,
+    fontSize: 20,
+    color: "#015A83",
+    fontFamily: "Lato-Bold",
+  },
+  productCard: {
+    borderWidth: 1,
+    borderColor: "transparent",
+    borderRadius: 50,
+    backgroundColor: "#EEE3CB",
+    padding: 20,
+    marginBottom: 20,
+    height: 80,
+    justifyContent: "center",
+  },
+  productCardTitle: {
+    fontFamily: "Lato-BoldItalic",
+    fontSize: 18,
+    color: "rgba(1,90,131,255)",
+  },
+  productsContainer: {
+    marginHorizontal: 18
+  }
 });
 
 export default CreateNewRoutineScreen;

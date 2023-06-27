@@ -3,21 +3,18 @@ import {
   View,
   Text,
   StyleSheet,
-  Button,
   TouchableOpacity,
   Image,
   Dimensions,
   ScrollView,
-  Modal,
 } from "react-native";
-
 import {
   ParamListBase,
-  useNavigation,
   RouteProp,
+  useNavigation,
 } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/types";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import Icon from "react-native-vector-icons/FontAwesome";
 import UserContext from "../contexts/UserContext";
 
@@ -51,20 +48,16 @@ type Like = {
   };
 };
 
-type SkinCareTypeScreenRouteProp = RouteProp<
-  RootStackParamList,
-  "SkincareType"
->;
+type WeatherTypeScreenRouteProp = RouteProp<RootStackParamList, "WeatherType">;
 
 type Props = {
-  route: SkinCareTypeScreenRouteProp;
+  route: WeatherTypeScreenRouteProp;
 };
 
-const SkincareTypeScreen: React.FC<Props> = ({ route }) => {
-  const { skincareType } = route.params;
+const WeatherTypeScreen: React.FC<Props> = ({ route }) => {
+  const { weatherType } = route.params;
   const [routinesByType, setRoutinesByType] = useState<RoutineType[]>([]);
   const [fetchRoutinesError, setFetchRoutinesError] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
   const { userId } = useContext(UserContext);
 
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
@@ -75,30 +68,21 @@ const SkincareTypeScreen: React.FC<Props> = ({ route }) => {
 
   useEffect(() => {
     fetchRoutinesByType();
-    // console.log(routinesByType);
   }, []);
 
-  // useEffect(() => {
-  //   console.log("render", routinesByType)
-  // }, [routinesByType]);
-
   const fetchRoutinesByType = async () => {
+    const encodedWeatherType = encodeURIComponent(weatherType);
     try {
       const response = await fetch(
-        `https://nourishskin.herokuapp.com/routine/skintype/${skincareType.toLowerCase()}`
+        `https://nourishskin.herokuapp.com/routine/weather/${encodedWeatherType}`
       );
       const data = await response.json();
 
       const likedResponse = await fetch(
         `https://nourishskin.herokuapp.com/like/user/${userId}`
       );
-      const likedData = await likedResponse.json().then((r) => {
-        console.log(r);
-        return r;
-      });
-      const likedRoutineIds = likedData.map((like: Like) => {
-        like.routine_id.id;
-      });
+      const likedData = await likedResponse.json();
+      const likedRoutineIds = likedData.map((like: Like) => like.routine_id.id);
 
       const routinesWithLikes = [];
 
@@ -230,35 +214,6 @@ const SkincareTypeScreen: React.FC<Props> = ({ route }) => {
     }
   };
 
-  const handleModal = () => {
-    setModalVisible(!modalVisible);
-  };
-
-  const filterOnCategory = (category: string) => {
-    if (category !== "all") {
-      const filterData = routinesByType.filter((routine) => {
-        return routine["weather_type"] === category;
-      });
-      setRoutinesByType(filterData);
-    } else {
-      fetchRoutinesByType();
-    }
-  };
-
-  const filterOnLikes = (category: string) => {
-    if (category === "lowest") {
-      const filterdata = routinesByType.sort((a, b) => {
-        return a._count.likes - b._count.likes;
-      });
-      setRoutinesByType(filterdata);
-    } else {
-      const filterdata = routinesByType.sort((a, b) => {
-        return b._count.likes - a._count.likes;
-      });
-      setRoutinesByType(filterdata);
-    }
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
@@ -269,93 +224,16 @@ const SkincareTypeScreen: React.FC<Props> = ({ route }) => {
         />
       </View>
       <View style={styles.titleContainer}>
-        <Text style={styles.titleText}>{skincareType} routines</Text>
+        <Text style={styles.titleText}>{weatherType} routines</Text>
       </View>
       <View style={styles.navButton}>
         <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
           <Text style={styles.backText}>Back</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.backButton} onPress={handleModal}>
-          <Text style={styles.backText}>Filter</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.filter}>
-        <Modal
-          visible={modalVisible}
-          animationType="slide"
-          transparent={true}
-          onRequestClose={() => {
-            handleModal();
-          }}
-        >
-          <TouchableOpacity
-            style={styles.modalContainer}
-            onPressOut={handleModal}
-          >
-            <View style={styles.modalView}>
-              <Text style={styles.titleFilter}>Filter on</Text>
-              <View style={styles.filterTag}>
-                <Text style={styles.categoryTitle}>
-                  ⊹⊹⊹⊹⊹ weather type ⊹⊹⊹⊹⊹
-                </Text>
-                <View style={styles.category}>
-                  <TouchableOpacity
-                    style={styles.categoryTag}
-                    onPress={() => filterOnCategory("dry air")}
-                  >
-                    <Text style={styles.categoryText}>dry air</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.categoryTag}
-                    onPress={() => filterOnCategory("hot air")}
-                  >
-                    <Text style={styles.categoryText}>hot air</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.categoryTag}
-                    onPress={() => filterOnCategory("humid air")}
-                  >
-                    <Text style={styles.categoryText}>humid air</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.categoryTag}
-                    onPress={() => filterOnCategory("all")}
-                  >
-                    <Text style={styles.categoryText}>all</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-              <View style={styles.filterTag}>
-                <Text style={styles.categoryTitle}>⊹⊹⊹⊹⊹ likes ⊹⊹⊹⊹⊹</Text>
-                <View style={styles.category}>
-                  <TouchableOpacity
-                    style={styles.categoryTag}
-                    onPress={() => filterOnLikes("highest")}
-                  >
-                    <Text style={styles.categoryText}>highest</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.categoryTag}
-                    onPress={() => filterOnLikes("lowest")}
-                  >
-                    <Text style={styles.categoryText}>lowest</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-              <TouchableOpacity
-                style={styles.backButtonFilter}
-                onPress={handleModal}
-              >
-                <Text style={styles.backText}>Back</Text>
-              </TouchableOpacity>
-            </View>
-          </TouchableOpacity>
-        </Modal>
       </View>
       {fetchRoutinesError && <Text>Oops, something went wrong</Text>}
       <ScrollView>
-        {routinesByType.map((routine: RoutineType) => (
+        {routinesByType.map((routine: any) => (
           <View key={routine.id} style={styles.routineContainer}>
             <View style={styles.routineContainerTop}>
               <Text style={styles.userName}>{routine.user_id.username}</Text>
@@ -363,21 +241,13 @@ const SkincareTypeScreen: React.FC<Props> = ({ route }) => {
               <Text style={styles.routineName}>{routine.routine_name}</Text>
               <Text style={styles.createdAt}>{routine.created_at}</Text>
             </View>
-
             <View style={styles.routineContainerBottom}>
-              {routine.products.map(
-                (
-                  product: { brand: string; productName: string },
-                  index: number
-                ) => (
-                  <View key={index} style={styles.routineProduct}>
-                    <Text style={styles.brandName}>⊹ {product.brand}</Text>
-                    <Text style={styles.productName}>
-                      {product.productName}
-                    </Text>
-                  </View>
-                )
-              )}
+              {routine.products.map((product: any, index: number) => (
+                <View key={index} style={styles.routineProduct}>
+                  <Text style={styles.brandName}>⊹ {product.brand}</Text>
+                  <Text style={styles.productName}>{product.productName}</Text>
+                </View>
+              ))}
               {routine.description && (
                 <View style={styles.descriptionBox}>
                   <Text style={styles.descriptionText}>
@@ -434,11 +304,11 @@ const styles = StyleSheet.create({
   routineName: {
     // margin: 10,
     fontFamily: "Lato-BoldItalic",
-    fontSize: 26,
+    fontSize: 25,
   },
   userName: {
     fontFamily: "Lato-BoldItalic",
-    fontSize: 26,
+    fontSize: 25,
     marginLeft: 13,
     padding: 6,
     marginRight: 0,
@@ -459,7 +329,7 @@ const styles = StyleSheet.create({
     paddingLeft: 6,
   },
   stars: {
-    fontSize: 25,
+    fontSize: 24,
     fontFamily: "Lato-Bold",
     color: "rgba(1,90,131,255)",
     padding: 10,
@@ -518,7 +388,7 @@ const styles = StyleSheet.create({
     height: 50,
     alignSelf: "center",
     padding: 10,
-    // marginBottom: 30,
+    marginBottom: 30,
     margin: 5,
   },
 
@@ -565,76 +435,6 @@ const styles = StyleSheet.create({
     fontFamily: "PlayfairDisplay-Bold",
     fontSize: 15,
   },
-  modalContainer: {
-    flex: 1,
-  },
-  modalView: {
-    backgroundColor: "white",
-    height: "60%",
-    marginTop: "auto",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-  },
-  filter: {
-    height: 80,
-  },
-  filterTag: {
-    height: 120,
-    marginLeft: 15,
-    marginBottom: 30,
-    // borderWidth: 1,
-  },
-  category: {
-    height: "100%",
-    margin: 10,
-    marginLeft: 0,
-    padding: 4,
-    display: "flex",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignItems: "center",
-    // borderWidth: 1,
-  },
-  categoryTag: {
-    margin: 5,
-    width: 120,
-    padding: 5,
-    borderRadius: 30,
-    backgroundColor: "#B7C4CF",
-    height: 35,
-  },
-  categoryText: {
-    textAlign: "center",
-    fontFamily: "Lato-Bold",
-    fontSize: 17,
-  },
-  categoryTitle: {
-    fontFamily: "Lato-Bold",
-    fontSize: 22,
-    color: "rgba(1,90,131,255)",
-    padding: 6,
-  },
-  titleFilter: {
-    fontFamily: "PlayfairDisplay-Bold",
-    color: "white",
-    letterSpacing: 1,
-    backgroundColor: "rgba(1,90,131,255)",
-    fontSize: 27,
-    padding: 15,
-    marginBottom: 10,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-  },
-  backButtonFilter: {
-    backgroundColor: "#EEE3CB",
-    borderRadius: 30,
-    width: 120,
-    height: 50,
-    alignSelf: "center",
-    padding: 10,
-    marginTop: -20,
-    justifyContent: "center",
-  },
 });
 
-export default SkincareTypeScreen;
+export default WeatherTypeScreen;

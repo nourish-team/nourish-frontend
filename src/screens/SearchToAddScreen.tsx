@@ -33,13 +33,26 @@ type SearchResult = {
 };
 
 const SearchToAddScreen: React.FC<Props> = ({ route, navigation }) => {
-  const { routineId, routineName, routineProduct } = route.params;
+  const { routineId, routineName, routineProduct, routineDescription } =
+    route.params;
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [fetchItemsError, setFetchItemsError] = useState(false);
   const [updateError, setUpdateError] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const PAGE_SIZE = 5;
 
   useEffect(() => {}, [routineId]);
+
+  const handleBackPress = () => {
+    navigation.navigate("UserRoutinePageScreen", {
+      routineId,
+      routineName,
+      routineProduct,
+      routineDescription,
+    });
+  };
 
   const handleSearchItem = async (brand: string) => {
     console.log("BRAND ", brand);
@@ -47,23 +60,29 @@ const SearchToAddScreen: React.FC<Props> = ({ route, navigation }) => {
       const acceptDifferences = brand.toLowerCase();
       const encodedBrand = encodeURIComponent(acceptDifferences);
       const response = await fetch(
-        `http://10.0.2.2:8080/product/${encodedBrand}`
+        `https://nourishskin.herokuapp.com/product/${encodedBrand}`
       );
       if (response.ok) {
         const data = await response.json();
         setSearchResults(data);
         setFetchItemsError(false);
+        setCurrentPage(1);
+        setTotalPages(Math.ceil(data.length / PAGE_SIZE));
       } else {
         setSearchResults([]);
         setFetchItemsError(true);
+        setCurrentPage(1);
+        setTotalPages(1);
       }
     } catch (error) {
       setSearchResults([]);
       setFetchItemsError(true);
+      setCurrentPage(1);
+      setTotalPages(1);
     }
   };
 
-  const handleItemSelect = async (itemId) => {
+  const handleItemSelect = async (itemId: number) => {
     const newRoutineProducts = routineProduct.concat(itemId);
     const routineData = {
       routine_id: routineId,
@@ -72,13 +91,16 @@ const SearchToAddScreen: React.FC<Props> = ({ route, navigation }) => {
     };
     console.log("ROUTINE DATA ", routineData);
     try {
-      const response = await fetch(`http://10.0.2.2:8080/routine/update`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(routineData),
-      });
+      const response = await fetch(
+        `https://nourishskin.herokuapp.com/routine/update`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(routineData),
+        }
+      );
 
       if (response.ok) {
         console.log("response ok");
@@ -86,7 +108,8 @@ const SearchToAddScreen: React.FC<Props> = ({ route, navigation }) => {
         navigation.navigate("UserRoutinePageScreen", {
           routineId,
           routineName,
-          routineProduct,
+          routineProduct: newRoutineProducts,
+          routineDescription,
         });
       } else {
         console.log("response not ok");
@@ -97,6 +120,18 @@ const SearchToAddScreen: React.FC<Props> = ({ route, navigation }) => {
       console.error(error);
     }
   };
+
+  const handlePreviousPage = () => {
+    setCurrentPage(currentPage - 1);
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage(currentPage + 1);
+  };
+
+  const endIndex = currentPage * PAGE_SIZE;
+  const startIndex = endIndex - PAGE_SIZE;
+  const paginatedData = searchResults.slice(startIndex, endIndex);
 
   return (
     <View style={styles.container}>
@@ -111,22 +146,54 @@ const SearchToAddScreen: React.FC<Props> = ({ route, navigation }) => {
           onPress={() => handleSearchItem(searchQuery)}
           style={styles.button}
         >
-          <Text style={styles.buttonText}>Search {routineId}</Text>
+          <Text style={styles.buttonText}>Search</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handleBackPress}>
+          <Text style={styles.backButtonText}>Back</Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.resultContainer}>
-        {fetchItemsError ? <Text>Oops! Brand not found</Text> : null}
-        <FlatList
-          data={searchResults}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              onPress={() => handleItemSelect(item.id)}
-              style={styles.card}
-            >
-              <Text>{item.product_name}</Text>
-            </TouchableOpacity>
-          )}
-        />
+      <View style={styles.resultsParentContainer}>
+        {searchResults.length > 0 && (
+          <View style={styles.resultContainer}>
+            {fetchItemsError ? <Text>Oops! Brand not found</Text> : null}
+            <View>
+              <FlatList
+                data={paginatedData}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    onPress={() => handleItemSelect(item.id)}
+                    style={styles.card}
+                  >
+                    <Text style={styles.cardText}>{item.product_name}</Text>
+                  </TouchableOpacity>
+                )}
+                keyExtractor={(item) => item.id.toString()}
+              />
+            </View>
+            <View style={styles.paginationButtonContainer}>
+              <TouchableOpacity
+                onPress={handlePreviousPage}
+                disabled={currentPage === 1}
+                style={[
+                  styles.paginationButton,
+                  currentPage === 1 && styles.disabledButton,
+                ]}
+              >
+                <Text style={styles.paginationButtonText}>Previous</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleNextPage}
+                disabled={currentPage === totalPages}
+                style={[
+                  styles.paginationButton,
+                  currentPage === totalPages && styles.disabledButton,
+                ]}
+              >
+                <Text style={styles.paginationButtonText}>Next</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
       </View>
     </View>
   );
@@ -135,15 +202,14 @@ const SearchToAddScreen: React.FC<Props> = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFDD0",
-    paddingTop: 70,
-    paddingLeft: 45,
-    paddingRight: 45,
-    paddingBottom: 70,
+    backgroundColor: "white",
   },
   searchContainer: {
     alignItems: "center",
     marginBottom: 10,
+    marginTop: 70,
+    paddingLeft: 45,
+    paddingRight: 45,
   },
   titleText: {
     color: "rgba(1, 90, 131, 255)",
@@ -175,17 +241,56 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Lato-Bold",
   },
+  backButtonText: {
+    fontSize: 16,
+    fontFamily: "Lato-Bold",
+    textDecorationLine: "underline",
+    marginBottom: 5,
+    marginTop: -5,
+  },
   resultContainer: {
     flex: 1,
     marginTop: 10,
   },
   card: {
-    backgroundColor: "#FFF",
-    padding: 10,
+    backgroundColor: "#EEE3CB",
+    padding: 18,
     marginBottom: 10,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: "rgba(1, 90, 131, 255)",
+    borderRadius: 30,
+    borderColor: "transparent",
+  },
+  cardText: {
+    fontFamily: "Lato-Bold",
+    fontSize: 16,
+  },
+  paginationButtonContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  paginationButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    marginHorizontal: 5,
+    backgroundColor: "white",
+    width: 150,
+  },
+  disabledButton: {
+    opacity: 0.5,
+  },
+  paginationButtonText: {
+    color: "rgba(1, 90, 131, 255)",
+    fontFamily: "Lato-Bold",
+    textAlign: "center",
+    fontSize: 20,
+  },
+  resultsParentContainer: {
+    backgroundColor: "#B7C4CF",
+    width: "100%",
+    height: "100%",
+    borderTopRightRadius: 20,
+    borderTopLeftRadius: 20,
+    padding: 30,
   },
 });
 

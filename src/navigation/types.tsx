@@ -9,21 +9,29 @@ export type RootStackParamList = {
     routineId: number;
     routineName: string;
     routineProduct: number[];
+    routineDescription: string | null;
   };
   AddJournalScreen: { routineId: number };
   SearchToAddScreen: {
     routineId: number;
     routineName: string;
     routineProduct: number[];
+    routineDescription: string | null;
   };
-  JournalHistoryScreen: { routineId: number };
-  CreateNewRoutineScreen: {
-    selectedItems: (number | { itemId: number; itemName: string })[];
-  };
+  JournalHistoryScreen: { routineId: number; routineName: string };
+  CreateNewRoutineScreen:
+    | undefined
+    | {
+        selectedItems: (number | { itemId: number; itemName: string })[];
+      };
   SearchToAddNewScreen: undefined;
+  WeatherType: { weatherType: string };
+  TopTen: undefined;
 };
 
 export type MainTabParamList = {
   Home: undefined;
   UserPage: undefined;
+  Likes: undefined;
+  Account: undefined;
 };
