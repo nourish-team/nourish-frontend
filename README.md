@@ -113,11 +113,16 @@ Contributions are welcome! If you would like to contribute to nourish, please fo
 
 ## Contact
 
-- Anissa Chadouli
-- Lisa
-- Asako Ueno
-- Sean
-- Chai
+- **Anissa Chadouli**, Product Manager 
+  (_**Github:**_ [Anissa3005](https://github.com/Anissa3005))
+- **Lisa Tan**, Tech Lead
+  (_**Github:**_ [oddpharmacy](https://github.com/oddpharmacy))
+- **Asako Ueno**, Frontend Engineer
+  (_**Github:**_ [asa-U](https://github.com/asa-U))
+- **Sean McKay**, Fullstack Engineer
+  (_**Github:**_ [shonancanuck](https://github.com/shonancanuck))
+- **Gee Chai**, Fullstack Engineer
+  (_**Github:**_ [FefesG5](https://github.com/FefesG5))
 
 ## Acknowledgments
 
