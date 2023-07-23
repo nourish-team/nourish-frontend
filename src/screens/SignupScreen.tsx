@@ -61,7 +61,6 @@ const SignupScreen: React.FC = () => {
         console.log("username ", username);
         setUserId(id);
         setUserName(username);
-        alert("Sign Up successful!");
       }
     } catch (error) {
       console.error(error);
@@ -125,6 +124,7 @@ const SignupScreen: React.FC = () => {
             value={password}
             onChangeText={(input) => setPassword(input)}
             secureTextEntry
+            placeholder="minimum 6 characters"
           />
 
           <View style={styles.buttonParentContainer}>

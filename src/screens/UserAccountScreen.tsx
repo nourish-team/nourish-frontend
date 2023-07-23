@@ -55,7 +55,7 @@ const UserAccountScreen: React.FC = () => {
         />
       </View>
       <View style={styles.titleContainer}>
-        <Text style={styles.titleText}>My Account</Text>
+        <Text style={styles.titleText}>Settings</Text>
       </View>
 
       <TouchableOpacity style={styles.card} onPress={handleAccountLogout}>

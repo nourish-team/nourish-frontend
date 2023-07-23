@@ -18,10 +18,15 @@ export type RootStackParamList = {
     routineProduct: number[];
   };
   JournalHistoryScreen: { routineId: number; routineName: string };
-  CreateNewRoutineScreen: {
+  CreateNewRoutineScreen:
+    | undefined
+    | {
+        selectedItems: (number | { itemId: number; itemName: string })[];
+      };
+  SearchToAddNewScreen: {
     selectedItems: (number | { itemId: number; itemName: string })[];
   };
-  SearchToAddNewScreen: undefined;
+
   WeatherType: { weatherType: string };
   TopTen: undefined;
 };

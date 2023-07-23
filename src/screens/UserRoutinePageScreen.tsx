@@ -79,13 +79,16 @@ const UserRoutinePageScreen: React.FC<Props> = ({ route, navigation }) => {
       public: true,
     };
     try {
-      const response = await fetch(`https://nourishskin.herokuapp.com/routine/update`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(routineData),
-      });
+      const response = await fetch(
+        `https://nourishskin.herokuapp.com/routine/update`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(routineData),
+        }
+      );
 
       if (response.ok) {
         alert("Product deleted.");
@@ -104,7 +107,9 @@ const UserRoutinePageScreen: React.FC<Props> = ({ route, navigation }) => {
 
     try {
       const fetchPromises = routineProduct.map(async (pid) => {
-        const response = await fetch(`https://nourishskin.herokuapp.com/product/id/${pid}`);
+        const response = await fetch(
+          `https://nourishskin.herokuapp.com/product/id/${pid}`
+        );
         const data = await response.json();
         const newProduct = {
           productName: data.product_name,
@@ -115,8 +120,25 @@ const UserRoutinePageScreen: React.FC<Props> = ({ route, navigation }) => {
       });
 
       const newProducts = await Promise.all(fetchPromises);
-      console.log("newproducts ", newProducts);
-      setProducts(newProducts);
+
+      /// Filter out duplicate products
+      const uniqueProducts = Array.from(
+        new Set(newProducts.map((product) => product.productId))
+      )
+        .map((id) => newProducts.find((product) => product.productId === id))
+        .filter(
+          (
+            product
+          ): product is {
+            productName: string;
+            productBrand: string;
+            productId: number;
+          } => Boolean(product)
+        );
+
+      console.log("uniqueProducts ", uniqueProducts);
+
+      setProducts(uniqueProducts);
     } catch (error) {
       console.error(error);
     } finally {
@@ -161,7 +183,7 @@ const UserRoutinePageScreen: React.FC<Props> = ({ route, navigation }) => {
 
   useEffect(() => {
     fetchAndDisplayProducts();
-    console.log("ROUTINE DESC: ", routineDescription);
+    console.log("routine product", routineProduct);
   }, [routineProduct, description]);
 
   return (

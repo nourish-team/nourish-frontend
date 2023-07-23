@@ -6,7 +6,7 @@ import {
   StyleSheet,
   TextInput,
   Switch,
-  ScrollView
+  ScrollView,
 } from "react-native";
 import { RootStackParamList } from "../navigation/types";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -50,16 +50,17 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
   const [error, setError] = useState(false);
   const [createButtonDisabled, setCreateButtonDisabled] = useState(true);
   const [description, setDescription] = useState("");
-  const weatherTypeOptions = [
-    "hot air",
-    "dry air",
-    "humid air",
-  ];
+  const weatherTypeOptions = ["hot air", "dry air", "humid air"];
   const [weatherType, setWeatherType] = useState<string>("");
 
   useEffect(() => {
+    console.log("Selected items at the start of useEffect:", selectedItems);
     if (selectedItems && selectedItems.length > 0) {
-      setSavedItems((prevSavedItems) => [...prevSavedItems, ...selectedItems]);
+      console.log("trying to clear the items");
+      setSavedItems((prevSavedItems) => {
+        const uniqueItems = new Set([...prevSavedItems, ...selectedItems]);
+        return Array.from(uniqueItems);
+      });
     }
   }, [selectedItems]);
 
@@ -84,7 +85,7 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
   };
 
   const handleAddProductsPress = () => {
-    navigation.navigate("SearchToAddNewScreen");
+    navigation.navigate("SearchToAddNewScreen", { selectedItems: savedItems });
   };
 
   const handlePublicToggle = () => {
@@ -115,13 +116,16 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
     };
 
     try {
-      const response = await fetch("https://nourishskin.herokuapp.com/routine/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(routineData),
-      });
+      const response = await fetch(
+        "https://nourishskin.herokuapp.com/routine/create",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(routineData),
+        }
+      );
 
       if (response.ok) {
         setError(false);
@@ -147,32 +151,32 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <TouchableOpacity style={styles.tabTop} >
+        <TouchableOpacity style={styles.tabTop}>
           <Text style={styles.tabText}>new routine</Text>
         </TouchableOpacity>
         <TouchableOpacity
-              style={styles.createRoutineButton}
-              onPress={handleCreateRoutine}
-              >
-              <Text style={styles.createRoutineButtonText}>Create</Text>
+          style={styles.createRoutineButton}
+          onPress={handleCreateRoutine}
+        >
+          <Text style={styles.createRoutineButtonText}>Create</Text>
         </TouchableOpacity>
         <TouchableOpacity
-              style={styles.cancelButton}
-              onPress={handleCancelButtonPress}
-              >
-              <Text style={styles.cancelButtonText}>Cancel</Text>
+          style={styles.cancelButton}
+          onPress={handleCancelButtonPress}
+        >
+          <Text style={styles.cancelButtonText}>Cancel</Text>
         </TouchableOpacity>
       </View>
-      {error ? (
-        <Text>Oops, there was a problem making your routine</Text>
-      ) : null}
       <ScrollView style={styles.contentContainer}>
+        {error ? (
+          <Text>Oops, there was a problem making your routine</Text>
+        ) : null}
         <View style={styles.newNameContainer}>
           <Text style={styles.titleNameText}>Name</Text>
           <TextInput
-          style={styles.searchBox}
-          value={routineName}
-          onChangeText={(input) => setRoutineName(input)}
+            style={styles.searchBox}
+            value={routineName}
+            onChangeText={(input) => setRoutineName(input)}
           />
         </View>
         <View style={styles.descriptionParentContainer}>
@@ -184,52 +188,52 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
             </View>
           </View>
           <View style={styles.descriptionContainer}>
-              <TextInput
+            <TextInput
               value={description}
               onChangeText={setDescription}
-              placeholder="Describe your routine here..."
+              placeholder="Describe your routine here... Max 300 char"
               multiline
-              />
+            />
           </View>
         </View>
         <View style={styles.selectContainer}>
-            <View style={styles.selectContainerLeft}>
-              <Text style={styles.titleNameText}>Skin Type</Text>
-            </View>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {skinTypeOptions.map((option, index) => (
-                <TouchableOpacity
-                  style={[
-                    styles.optionButton,
-                    selectedSkinType === option && styles.selectedOption
-                  ]}
-                  key={index}
-                  onPress={() => handleSkinTypeSelect(option)}
-                >
-                  <Text style={styles.optionText}>{option}</Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
+          <View style={styles.selectContainerLeft}>
+            <Text style={styles.titleNameText}>Skin Type</Text>
           </View>
-          <View style={styles.selectContainer}>
-            <View style={styles.selectContainerLeft}>
-              <Text style={styles.titleNameText}>Weather Type</Text>
-            </View>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {weatherTypeOptions.map((option, index) => (
-                <TouchableOpacity
-                  style={[
-                    styles.optionButton,
-                    weatherType === option && styles.selectedOption
-                  ]}
-                  key={index}
-                  onPress={() => handleWeatherTypeSelect(option)}
-                >
-                  <Text style={styles.optionText}>{option}</Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {skinTypeOptions.map((option, index) => (
+              <TouchableOpacity
+                style={[
+                  styles.optionButton,
+                  selectedSkinType === option && styles.selectedOption,
+                ]}
+                key={index}
+                onPress={() => handleSkinTypeSelect(option)}
+              >
+                <Text style={styles.optionText}>{option}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+        <View style={styles.selectContainer}>
+          <View style={styles.selectContainerLeft}>
+            <Text style={styles.titleNameText}>Weather Type</Text>
           </View>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {weatherTypeOptions.map((option, index) => (
+              <TouchableOpacity
+                style={[
+                  styles.optionButton,
+                  weatherType === option && styles.selectedOption,
+                ]}
+                key={index}
+                onPress={() => handleWeatherTypeSelect(option)}
+              >
+                <Text style={styles.optionText}>{option}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
         <TouchableOpacity
           style={styles.createProductButton}
           onPress={handleAddProductsPress}
@@ -239,18 +243,18 @@ const CreateNewRoutineScreen: React.FC<Prop> = ({ route, navigation }) => {
         <Text style={styles.productsTitleText}>Products</Text>
         <View style={styles.productsContainer}>
           {savedItems && savedItems.length > 0 ? (
-          savedItems.map((item, index) => (
-            <View key={index} style={styles.productCard}>
-              <Text style={styles.productCardTitle}>
-                {typeof item === "number" ? item : item.itemName}
-              </Text>
+            savedItems.map((item, index) => (
+              <View key={index} style={styles.productCard}>
+                <Text style={styles.productCardTitle}>
+                  {typeof item === "number" ? item : item.itemName}
+                </Text>
+              </View>
+            ))
+          ) : (
+            <View style={styles.productCard}>
+              <Text style={styles.productCardTitle}>No selected items</Text>
             </View>
-          ))
-                ) : (
-          <View style={styles.productCard}>
-            <Text style={styles.productCardTitle}>No selected items</Text>
-          </View>
-                )}
+          )}
         </View>
       </ScrollView>
     </View>
@@ -264,7 +268,7 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     flexDirection: "row",
-    justifyContent: "space-around"
+    justifyContent: "space-around",
   },
   tabTop: {
     marginTop: 30,
@@ -279,10 +283,10 @@ const styles = StyleSheet.create({
   },
   tabText: {
     fontFamily: "Lato-Bold",
-    fontSize: 23
+    fontSize: 23,
   },
   contentContainer: {
-    backgroundColor: "white"
+    backgroundColor: "white",
   },
   createRoutineButton: {
     width: "25%",
@@ -301,7 +305,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   buttonSpacer: {
-    width: 20, 
+    width: 20,
   },
   cancelButton: {
     width: "15%",
@@ -318,14 +322,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Lato-Bold",
     textAlign: "center",
-    textDecorationLine: "underline"
+    textDecorationLine: "underline",
   },
   newNameContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingRight:20,
-    paddingLeft:20,
+    paddingRight: 20,
+    paddingLeft: 20,
     marginTop: 30,
     marginBottom: 20,
   },
@@ -350,10 +354,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 18,
     backgroundColor: "white",
     marginBottom: 20,
-    flexDirection: "row"
+    flexDirection: "row",
   },
   selectContainerLeft: {
-    width: 100
+    width: 100,
   },
   createProductButton: {
     width: 300,
@@ -363,8 +367,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignSelf: "center",
     alignItems: "center",
-    paddingRight:10,
-    paddingLeft:10,
+    paddingRight: 10,
+    paddingLeft: 10,
     marginTop: 20,
     marginBottom: 20,
   },
@@ -374,7 +378,7 @@ const styles = StyleSheet.create({
     fontFamily: "Lato-Bold",
   },
   descriptionParentContainer: {
-    alignItems: "center"
+    alignItems: "center",
   },
   descriptionContainerTop: {
     width: 350,
@@ -404,7 +408,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "#015A83",
     fontFamily: "Lato-Bold",
-    marginLeft: 15
+    marginLeft: 15,
   },
   publicToggle: {
     flex: 3,
@@ -417,11 +421,11 @@ const styles = StyleSheet.create({
   optionButton: {
     padding: 20,
     marginHorizontal: 10,
-    backgroundColor: '#ddd',
+    backgroundColor: "#ddd",
     borderRadius: 30,
   },
   selectedOption: {
-    backgroundColor: '#666',
+    backgroundColor: "#666",
   },
   optionText: {
     fontFamily: "Lato-Bold",
@@ -449,8 +453,8 @@ const styles = StyleSheet.create({
     color: "rgba(1,90,131,255)",
   },
   productsContainer: {
-    marginHorizontal: 18
-  }
+    marginHorizontal: 18,
+  },
 });
 
 export default CreateNewRoutineScreen;

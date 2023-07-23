@@ -13,8 +13,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
-  ScrollView,
-  KeyboardAvoidingView,
+  Keyboard,
+  TouchableWithoutFeedback
 } from "react-native";
 
 type AddJournalScreenRouteProp = RouteProp<
@@ -87,92 +87,94 @@ const AddJournalScreen: React.FC<Props> = ({ route, navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.backContainer}>
-        <TouchableOpacity onPress={handleBackPress}>
-          <Text style={styles.backText}>go back</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.contentContainer}>
-      <View style={styles.textBubbleContainerLeft}>
-          <View style={styles.leftArrow} />
-          <View style={styles.textBubbleLeft}>
-            <Text style={styles.textBubbleTextLeft}>
-              how was your skin today?
-            </Text>
-          </View>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View style={styles.container}>
+        <View style={styles.backContainer}>
+          <TouchableOpacity onPress={handleBackPress}>
+            <Text style={styles.backText}>go back</Text>
+          </TouchableOpacity>
         </View>
-      <View style={styles.dateContainer}>
-        <View style={styles.textBubbleContainerLeft}>
+        <View style={styles.contentContainer}>
+          <View style={styles.textBubbleContainerLeft}>
             <View style={styles.leftArrow} />
-            <View style={[styles.textBubbleLeft, styles.dateBubble]}>
-              <Text style={styles.dateBubbleTextLeft}>
-              {commentDate && commentDate.toLocaleDateString()}
+            <View style={styles.textBubbleLeft}>
+              <Text style={styles.textBubbleTextLeft}>
+                how was your skin today?
               </Text>
             </View>
-            <TouchableOpacity
-            style={styles.dateChangeButton}
-            onPress={handleShowPicker}
-            >
-              <Text style={styles.dateButtonText}>Change Date</Text>
-            </TouchableOpacity>
-        </View>
-      </View>
-        <View style={styles.textBubbleContainerRight}>
+          </View>
+          <View style={styles.dateContainer}>
+            <View style={styles.textBubbleContainerLeft}>
+              <View style={styles.leftArrow} />
+              <View style={[styles.textBubbleLeft, styles.dateBubble]}>
+                <Text style={styles.dateBubbleTextLeft}>
+                  {commentDate && commentDate.toLocaleDateString()}
+                </Text>
+              </View>
+              <TouchableOpacity
+              style={styles.dateChangeButton}
+              onPress={handleShowPicker}
+              >
+                <Text style={styles.dateButtonText}>Change Date</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.textBubbleContainerRight}>
             <View style={styles.textBubbleRight}>
               <Text style={styles.textBubbleTextRight}>typing...</Text>
             </View>
             <View style={styles.rightArrow} />
-        </View>
-        {isPickerShown && (
-          <DateTimePicker
-            testID="dateTimePicker"
-            value={commentDate}
-            mode="date"
-            onChange={onChange}
-          />
-        )}
-        {text.length < 10 && clickedInputBox && (
-          <Text style={styles.errorMessage}>
-            Minimum 10-character comment required.
-          </Text>
-        )}
-        <View style={styles.commentContainer}>
-          <TextInput
-            id="comment"
-            placeholder="Comment your thoughts here"
-            onChangeText={onChangeText}
-            onPressIn={() => setClickedInputBox(true)}
-            value={text}
-            multiline
-            maxLength={380}
-            style={styles.commentText}
-          />
-        </View>
-
-        <View style={styles.submitContainer}>
-          <View style={styles.photoUpload}>
-            <PhotoUploadScreen image={image} setImage={setImage} />
           </View>
-          <View>
-            <TouchableOpacity
-              style={styles.submitButton}
-              onPress={handleSubmitInfo}
-              disabled={text.length < 10}
-            >
-              <Text
-                style={[
-                  styles.submitButtonText,
-                  text.length < 10 ? styles.submitButtonDisabled : {},
-                ]}
+          {isPickerShown && (
+            <DateTimePicker
+              testID="dateTimePicker"
+              value={commentDate}
+              mode="date"
+              onChange={onChange}
+            />
+          )}
+          {text.length < 10 && clickedInputBox && (
+            <Text style={styles.errorMessage}>
+              Minimum 10-character comment required.
+            </Text>
+          )}
+          <View style={styles.commentContainer}>
+            <TextInput
+              id="comment"
+              placeholder="Comment your thoughts here"
+              onChangeText={onChangeText}
+              onPressIn={() => setClickedInputBox(true)}
+              value={text}
+              multiline
+              maxLength={380}
+              style={styles.commentText}
+            />
+          </View>
+
+          <View style={styles.submitContainer}>
+            <View style={styles.photoUpload}>
+              <PhotoUploadScreen image={image} setImage={setImage} />
+            </View>
+            <View>
+              <TouchableOpacity
+                style={styles.submitButton}
+                onPress={handleSubmitInfo}
+                disabled={text.length < 10}
               >
-                Submit
-              </Text>
-            </TouchableOpacity>
+                <Text
+                  style={[
+                    styles.submitButtonText,
+                    text.length < 10 ? styles.submitButtonDisabled : {},
+                  ]}
+                >
+                  Submit
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 

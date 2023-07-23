@@ -1,5 +1,5 @@
 import React from "react";
-import { createStackNavigator } from "@react-navigation/stack";
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { RootStackParamList, MainTabParamList } from "./types";
 
@@ -19,7 +19,7 @@ import WeatherTypeScreen from "../screens/WeatherTypeScreen";
 import TopTenLikesScreen from "../screens/TopTenLikesScreen";
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
-const Stack = createStackNavigator<RootStackParamList>();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const Apptabs: React.FC = () => (
   <Tab.Navigator
