@@ -304,12 +304,11 @@ const styles = StyleSheet.create({
   routineName: {
     // margin: 10,
     fontFamily: "Lato-BoldItalic",
-    fontSize: 25,
+    fontSize: 24,
   },
   userName: {
     fontFamily: "Lato-BoldItalic",
-    fontSize: 25,
-    marginLeft: 13,
+    fontSize: 24,
     padding: 6,
     marginRight: 0,
     paddingRight: 0,
@@ -329,7 +328,7 @@ const styles = StyleSheet.create({
     paddingLeft: 6,
   },
   stars: {
-    fontSize: 24,
+    fontSize: 23,
     fontFamily: "Lato-Bold",
     color: "rgba(1,90,131,255)",
     padding: 10,
@@ -413,6 +412,7 @@ const styles = StyleSheet.create({
     // justifyContent: "center",
     flexDirection: "row",
     flexWrap: "wrap",
+    paddingHorizontal: 8,
   },
   routineContainerBottom: {
     backgroundColor: "white",

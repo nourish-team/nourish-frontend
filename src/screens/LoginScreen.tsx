@@ -63,7 +63,6 @@ const LoginScreen: React.FC = () => {
 
           setUserId(id);
           setUserName(username);
-          alert("Login successful!");
           setEmail("");
           setPassword("");
         }

@@ -24,7 +24,11 @@ export type RootStackParamList = {
     | {
         selectedItems: (number | { itemId: number; itemName: string })[];
       };
-  SearchToAddNewScreen: undefined;
+
+  SearchToAddNewScreen: {
+    selectedItems: (number | { itemId: number; itemName: string })[];
+  };
+
   WeatherType: { weatherType: string };
   TopTen: undefined;
 };

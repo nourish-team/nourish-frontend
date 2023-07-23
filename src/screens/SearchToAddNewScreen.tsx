@@ -37,9 +37,13 @@ const SearchToAddNewScreen: React.FC<Props> = ({ route, navigation }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [fetchItemsError, setFetchItemsError] = useState(false);
-  const [selectedItems, setSelectedItems] = useState<
-    { itemId: number; itemName: string }[]
-  >([]);
+  const { selectedItems: initialSelectedItems } = route.params || {
+    selectedItems: [],
+  };
+  const [selectedItems, setSelectedItems] =
+    useState<(number | { itemId: number; itemName: string })[]>(
+      initialSelectedItems
+    );
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const PAGE_SIZE = 5;
@@ -79,13 +83,19 @@ const SearchToAddNewScreen: React.FC<Props> = ({ route, navigation }) => {
   };
 
   const handleItemSelect = (itemId: number, itemName: string) => {
-    const updatedSelectedItems = selectedItems
-      ? [...selectedItems, { itemId, itemName }]
-      : [{ itemId, itemName }];
-    setSelectedItems(updatedSelectedItems);
-    navigation.navigate("CreateNewRoutineScreen", {
-      selectedItems: updatedSelectedItems || [],
-    });
+    const itemExists = selectedItems.some(
+      (item) => (typeof item === "number" ? item : item.itemId) === itemId
+    );
+
+    if (itemExists) {
+      alert("This item is already in your routine");
+    } else {
+      const updatedSelectedItems = [...selectedItems, { itemId, itemName }];
+      setSelectedItems(updatedSelectedItems);
+      navigation.navigate("CreateNewRoutineScreen", {
+        selectedItems: updatedSelectedItems,
+      });
+    }
   };
 
   const handlePreviousPage = () => {

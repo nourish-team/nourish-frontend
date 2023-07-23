@@ -121,8 +121,25 @@ const UserRoutinePageScreen: React.FC<Props> = ({ route, navigation }) => {
       });
 
       const newProducts = await Promise.all(fetchPromises);
-      console.log("newproducts ", newProducts);
-      setProducts(newProducts);
+
+      /// Filter out duplicate products
+      const uniqueProducts = Array.from(
+        new Set(newProducts.map((product) => product.productId))
+      )
+        .map((id) => newProducts.find((product) => product.productId === id))
+        .filter(
+          (
+            product
+          ): product is {
+            productName: string;
+            productBrand: string;
+            productId: number;
+          } => Boolean(product)
+        );
+
+      console.log("uniqueProducts ", uniqueProducts);
+
+      setProducts(uniqueProducts);
     } catch (error) {
       console.error(error);
     } finally {
@@ -167,7 +184,7 @@ const UserRoutinePageScreen: React.FC<Props> = ({ route, navigation }) => {
 
   useEffect(() => {
     fetchAndDisplayProducts();
-    console.log("ROUTINE DESC: ", routineDescription);
+    console.log("routine product", routineProduct);
   }, [routineProduct, description]);
 
   return (

@@ -74,11 +74,7 @@ const HomeScreen: React.FC = () => {
   const [location, setLocation] = useState<string | null>(null);
   const [weatherData, setWeatherData] = useState<ApiResponse | null>(null);
 
-  const weatherTypes = [
-    "hot air",
-    "dry air",
-    "humid air",
-  ];
+  const weatherTypes = ["hot air", "dry air", "humid air"];
 
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
@@ -97,19 +93,32 @@ const HomeScreen: React.FC = () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
 
     if (status !== "granted") {
-      setLocation("unavailable");
+      console.log("Location permission not granted");
       return;
     }
 
-    const userLocation = await Location.getLastKnownPositionAsync({});
+    let userLocation = await Location.getLastKnownPositionAsync({});
+
+    if (!userLocation) {
+      console.log(
+        "Unable to retrieve last known location, trying to get current location"
+      );
+      try {
+        userLocation = await Location.getCurrentPositionAsync({});
+        console.log("Successfully retrieved current location");
+      } catch (error) {
+        console.log("Error getting location: ", error);
+        return;
+      }
+    }
 
     if (userLocation) {
       const { latitude, longitude } = userLocation.coords;
-      setLocation(`${latitude}, ${longitude}`);
-      console.log(location);
+      const loc = `${latitude},${longitude}`;
+      setLocation(loc);
+      console.log("Set location: ", loc);
     } else {
-      setLocation("unavailable");
-      console.log(location);
+      console.log("Unable to retrieve location");
     }
   };
 
@@ -184,7 +193,7 @@ const HomeScreen: React.FC = () => {
 
   const handleTopTenPress = () => {
     navigation.navigate("TopTen");
-  }
+  };
 
   const hour =
     parseInt(
@@ -212,7 +221,9 @@ const HomeScreen: React.FC = () => {
         <View style={styles.greetContainer}>
           <Text style={styles.greetTitle}>Hello {userName}...</Text>
           <Text style={styles.greetText}>
-          Welcome to nourish, your personal companion for achieving healthy and radiant skin. Explore and unleash the potential of your skincare journey with us.
+            Welcome to nourish, your personal companion for achieving healthy
+            and radiant skin. Explore and unleash the potential of your skincare
+            journey with us.
           </Text>
         </View>
         <View style={styles.weatherCardContainer}>
@@ -234,7 +245,9 @@ const HomeScreen: React.FC = () => {
               <Text style={styles.weatherInfoText}>
                 City: {weatherData?.location?.name}
               </Text>
-              <Text style={[styles.weatherInfoText, styles.weatherInfoTextLast]}>
+              <Text
+                style={[styles.weatherInfoText, styles.weatherInfoTextLast]}
+              >
                 UV index: {weatherData?.current?.uv}
               </Text>
               {weatherData?.current?.uv && weatherData.current.uv >= 5 && (
@@ -245,13 +258,16 @@ const HomeScreen: React.FC = () => {
             </View>
           </ImageBackground>
         </View>
-        <TouchableOpacity onPress={handleTopTenPress} style={styles.topTenContainer}> 
+        <TouchableOpacity
+          onPress={handleTopTenPress}
+          style={styles.topTenContainer}
+        >
           <Image
-          source={require("../../assets/images/topten.png")}
-          style={styles.topTenImage}
-          resizeMode="contain"
-        />
-        <Text style={styles.topTenFont}>Top 10 Liked Routines</Text>
+            source={require("../../assets/images/topten.png")}
+            style={styles.topTenImage}
+            resizeMode="contain"
+          />
+          <Text style={styles.topTenFont}>Top 10 Liked Routines</Text>
         </TouchableOpacity>
         <Text style={styles.separator}>⊹ ⊹ ⊹ ⊹ ⊹ ⊹ ⊹ ⊹ ⊹ ⊹ ⊹ ⊹ ⊹ ⊹</Text>
         <Text style={styles.infoText}>browse by</Text>
@@ -440,12 +456,12 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginRight: 20,
   },
-  weatherImage: { 
-    width: "100%", 
-    borderRadius: 10, 
+  weatherImage: {
+    width: "100%",
+    borderRadius: 10,
   },
   weatherTextContainer: {
-    padding: 10
+    padding: 10,
   },
   weatherText: {
     fontSize: 20,
@@ -502,7 +518,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#EEE3CB",
     flexDirection: "row",
     alignItems: "center",
-    padding: 10
+    padding: 10,
   },
   topTenFont: {
     textAlign: "center",
@@ -513,14 +529,14 @@ const styles = StyleSheet.create({
   topTenImage: {
     width: 50,
     height: 50,
-    marginRight: 20
+    marginRight: 20,
   },
   separator: {
     textAlign: "center",
     marginBottom: 30,
     color: "rgba(1,90,131,255)",
-    fontSize: 20
-  }
+    fontSize: 20,
+  },
 });
 
 export default HomeScreen;

@@ -5,6 +5,9 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
 import * as Font from "expo-font";
+import { enableScreens } from "react-native-screens";
+
+enableScreens();
 
 // Authentication
 import { useAuthentication } from "./utils/hooks/useAuthentication";
