@@ -10,14 +10,59 @@ import {
   ScrollView,
   Modal,
 } from "react-native";
-import { ParamListBase, useNavigation } from "@react-navigation/native";
+
+import {
+  ParamListBase,
+  useNavigation,
+  RouteProp,
+} from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../navigation/types";
 import Icon from "react-native-vector-icons/FontAwesome";
 import UserContext from "../contexts/UserContext";
 
-const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
+type RoutineType = {
+  _count: { likes: number };
+  created_at: string;
+  description: string;
+  id: number;
+  liked: boolean;
+  products: {
+    brand: string;
+    productName: string;
+  }[];
+  routine_name: string;
+  routine_product: number[];
+  user_id: {
+    id: number;
+    username: string;
+  };
+  weather_type: string;
+};
+
+type Like = {
+  users_id: number;
+  routine_id: {
+    id: number;
+    routine_name: string;
+    routine_product: number[];
+    skin_type: string;
+    description: string | null;
+  };
+};
+
+type SkinCareTypeScreenRouteProp = RouteProp<
+  RootStackParamList,
+  "SkincareType"
+>;
+
+type Props = {
+  route: SkinCareTypeScreenRouteProp;
+};
+
+const SkincareTypeScreen: React.FC<Props> = ({ route }) => {
   const { skincareType } = route.params;
-  const [routinesByType, setRoutinesByType] = useState<any[]>([]);
+  const [routinesByType, setRoutinesByType] = useState<RoutineType[]>([]);
   const [fetchRoutinesError, setFetchRoutinesError] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const { userId } = useContext(UserContext);
@@ -30,6 +75,7 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
 
   useEffect(() => {
     fetchRoutinesByType();
+    // console.log(routinesByType);
   }, []);
 
   // useEffect(() => {
@@ -46,14 +92,20 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
       const likedResponse = await fetch(
         `https://nourishskin.herokuapp.com/like/user/${userId}`
       );
-      const likedData = await likedResponse.json();
-      const likedRoutineIds = likedData.map((like: any) => like.routine_id.id);
+      const likedData = await likedResponse.json().then((r) => {
+        console.log(r);
+        return r;
+      });
+      const likedRoutineIds = likedData.map((like: Like) => {
+        like.routine_id.id;
+      });
 
       const routinesWithLikes = [];
 
       for (const routine of data) {
-        const productPromises = routine.routine_product.map((productId: any) =>
-          fetch(`https://nourishskin.herokuapp.com/product/id/${productId}`)
+        const productPromises = routine.routine_product.map(
+          (productId: number) =>
+            fetch(`https://nourishskin.herokuapp.com/product/id/${productId}`)
         );
 
         const productResponses = await Promise.all(productPromises);
@@ -182,7 +234,8 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
     setModalVisible(!modalVisible);
   };
 
-  const filterOnCategory = (category: any) => {
+  const filterOnCategory = (category: string) => {
+
     if (category !== "all") {
       const filterData = routinesByType.filter((routine) => {
         return routine["weather_type"] === category;
@@ -303,7 +356,7 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
       </View>
       {fetchRoutinesError && <Text>Oops, something went wrong</Text>}
       <ScrollView>
-        {routinesByType.map((routine: any) => (
+        {routinesByType.map((routine: RoutineType) => (
           <View key={routine.id} style={styles.routineContainer}>
             <View style={styles.routineContainerTop}>
               <Text style={styles.userName}>{routine.user_id.username}</Text>
@@ -313,12 +366,20 @@ const SkincareTypeScreen: React.FC<{ route: any }> = ({ route }) => {
             </View>
 
             <View style={styles.routineContainerBottom}>
-              {routine.products.map((product: any, index: number) => (
-                <View key={index} style={styles.routineProduct}>
-                  <Text style={styles.brandName}>⊹ {product.brand}</Text>
-                  <Text style={styles.productName}>{product.productName}</Text>
-                </View>
-              ))}
+              {routine.products.map(
+                (
+                  product: { brand: string; productName: string },
+                  index: number
+                ) => (
+                  <View key={index} style={styles.routineProduct}>
+                    <Text style={styles.brandName}>⊹ {product.brand}</Text>
+                    <Text style={styles.productName}>
+                      {product.productName}
+                    </Text>
+                  </View>
+                )
+              )}
+
               {routine.description && (
                 <View style={styles.descriptionBox}>
                   <Text style={styles.descriptionText}>

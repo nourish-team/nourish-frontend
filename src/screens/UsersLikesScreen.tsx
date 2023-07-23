@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect, useCallback } from "react";
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from "@react-navigation/native";
 import {
   View,
   Text,
@@ -13,6 +13,8 @@ import {
 import UserContext from "../contexts/UserContext";
 import Icon from "react-native-vector-icons/FontAwesome";
 
+type Product = { product: string; brand: string };
+
 type RoutineItem = {
   users_id: number;
   routine_id: {
@@ -24,10 +26,21 @@ type RoutineItem = {
   };
 };
 
+type RoutineNames = {
+  users_id: number;
+  routine_id: {
+    id: number;
+    routine_name: string;
+    routine_product: Product[];
+    skin_type: string;
+    description: string;
+  };
+};
+
 const UsersLikesScreen: React.FC = () => {
   const { userId } = useContext(UserContext);
-  const [routines, setRoutines] = useState<any[]>([]);
-  const [showDescription, setShowDescription] = useState<any[]>([]);
+  const [routines, setRoutines] = useState<RoutineNames[]>([]);
+  const [showDescription, setShowDescription] = useState<number[]>([]);
   const [refresh, setRefresh] = useState(false);
 
   useFocusEffect(
@@ -37,20 +50,24 @@ const UsersLikesScreen: React.FC = () => {
   );
 
   const handleFetchProductNames = async (itemId: number) => {
-    const response = await fetch(`https://nourishskin.herokuapp.com/product/id/${itemId}`);
+    const response = await fetch(
+      `https://nourishskin.herokuapp.com/product/id/${itemId}`
+    );
     const data = await response.json();
     return { product: data.product_name, brand: data.brand };
   };
 
   const handleFetchLikesHistory = async () => {
     try {
-      const response = await fetch(`https://nourishskin.herokuapp.com/like/user/${userId}`);
+      const response = await fetch(
+        `https://nourishskin.herokuapp.com/like/user/${userId}`
+      );
       const fetchdata = await response.json();
 
       const routinesWithNames = await Promise.all(
         fetchdata.map(async (item: RoutineItem) => {
           const routineProducts = await Promise.all(
-            item.routine_id.routine_product.map(async (productId: number) => {
+            item.routine_id.routine_product.map(async (productId) => {
               const { product, brand } = await handleFetchProductNames(
                 productId
               );
@@ -145,7 +162,10 @@ const UsersLikesScreen: React.FC = () => {
                     {routine.routine_id.routine_product &&
                       routine.routine_id.routine_product.length > 0 &&
                       routine.routine_id.routine_product.map(
-                        (product: { product: string; brand: string }, index: number) => (
+                        (
+                          product: { product: string; brand: string },
+                          index: number
+                        ) => (
                           <View key={index} style={styles.productContainer}>
                             <Text style={styles.brandName}>
                               {product.brand}
@@ -238,7 +258,7 @@ const styles = StyleSheet.create({
   routineInnerContainer: {
     backgroundColor: "white",
     borderColor: "rgba(1,90,131,255)",
-    borderWidth: 3
+    borderWidth: 3,
   },
   vLineContainer: {
     flexDirection: "row",
@@ -284,12 +304,12 @@ const styles = StyleSheet.create({
     fontFamily: "PlayfairDisplay-Bold",
     color: "#967E76",
     textDecorationLine: "underline",
-    fontSize: 16
+    fontSize: 16,
   },
   productName: {
     fontFamily: "Lato-Bold",
     color: "#2D4654",
-    fontSize: 16
+    fontSize: 16,
   },
   productContainer: {
     backgroundColor: "white",
@@ -300,7 +320,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     borderWidth: 2,
     borderColor: "rgba(1,90,131,255)",
-    width: 250
+    width: 250,
   },
   logo: {
     height: 170,
@@ -319,7 +339,7 @@ const styles = StyleSheet.create({
     margin: 5,
     fontFamily: "PlayfairDisplay-Bold",
     color: "#F8ECD3",
-    fontSize: 17
+    fontSize: 17,
   },
   description: {
     padding: 5,

@@ -8,14 +8,55 @@ import {
   Dimensions,
   ScrollView,
 } from "react-native";
-import { ParamListBase, useNavigation } from "@react-navigation/native";
+import {
+  ParamListBase,
+  RouteProp,
+  useNavigation,
+} from "@react-navigation/native";
+import { RootStackParamList } from "../navigation/types";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import Icon from "react-native-vector-icons/FontAwesome";
 import UserContext from "../contexts/UserContext";
 
-const WeatherTypeScreen: React.FC<{ route: any }> = ({ route }) => {
+type RoutineType = {
+  _count: { likes: number };
+  created_at: string;
+  description: string;
+  id: number;
+  liked: boolean;
+  products: {
+    brand: string;
+    productName: string;
+  }[];
+  routine_name: string;
+  routine_product: number[];
+  user_id: {
+    id: number;
+    username: string;
+  };
+  weather_type: string;
+};
+
+type Like = {
+  users_id: number;
+  routine_id: {
+    id: number;
+    routine_name: string;
+    routine_product: number[];
+    skin_type: string;
+    description: string | null;
+  };
+};
+
+type WeatherTypeScreenRouteProp = RouteProp<RootStackParamList, "WeatherType">;
+
+type Props = {
+  route: WeatherTypeScreenRouteProp;
+};
+
+const WeatherTypeScreen: React.FC<Props> = ({ route }) => {
   const { weatherType } = route.params;
-  const [routinesByType, setRoutinesByType] = useState<any[]>([]);
+  const [routinesByType, setRoutinesByType] = useState<RoutineType[]>([]);
   const [fetchRoutinesError, setFetchRoutinesError] = useState(false);
   const { userId } = useContext(UserContext);
 
@@ -41,13 +82,14 @@ const WeatherTypeScreen: React.FC<{ route: any }> = ({ route }) => {
         `https://nourishskin.herokuapp.com/like/user/${userId}`
       );
       const likedData = await likedResponse.json();
-      const likedRoutineIds = likedData.map((like: any) => like.routine_id.id);
+      const likedRoutineIds = likedData.map((like: Like) => like.routine_id.id);
 
       const routinesWithLikes = [];
 
       for (const routine of data) {
-        const productPromises = routine.routine_product.map((productId: any) =>
-          fetch(`https://nourishskin.herokuapp.com/product/id/${productId}`)
+        const productPromises = routine.routine_product.map(
+          (productId: number) =>
+            fetch(`https://nourishskin.herokuapp.com/product/id/${productId}`)
         );
 
         const productResponses = await Promise.all(productPromises);

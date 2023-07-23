@@ -64,6 +64,7 @@ const UserRoutinePageScreen: React.FC<Props> = ({ route, navigation }) => {
       routineId,
       routineName,
       routineProduct,
+      routineDescription,
     });
   };
 

@@ -16,6 +16,7 @@ export type RootStackParamList = {
     routineId: number;
     routineName: string;
     routineProduct: number[];
+    routineDescription: string | null;
   };
   JournalHistoryScreen: { routineId: number; routineName: string };
   CreateNewRoutineScreen:
@@ -23,6 +24,7 @@ export type RootStackParamList = {
     | {
         selectedItems: (number | { itemId: number; itemName: string })[];
       };
+
   SearchToAddNewScreen: {
     selectedItems: (number | { itemId: number; itemName: string })[];
   };
